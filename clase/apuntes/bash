@@ -1,0 +1,17 @@
+tar -czvf otro.tgz otro   para comprimir
+
+con touch nombredefichero creamos un fichero
+vi
+esc para editar en modo comandos 
+y para editar
+
+nano
+
+globbing es un minilenguaje que sirve para describir patrones de texto
+se usa mucho en la shell (la shell hace sustituciones de globbing) cadenas de texto que tengan un aspecto en concreto 
+? : cualquier caracter cadena de longitud 1
+??: dos caracteres
+
+
+'' comilla simple se escapa entero
+"" las comillas blandas sustituyen algunas cosas 

@@ -1,0 +1,64 @@
+#Punteros: tipo de datos de una variable que puede contener la dirección de memoria d eotra variable
+
+int i;
+int*p;
+
+p=&i; apuntas a la dirección de i
+
+printf("El valor de p es %p\n",p)
+printf("La direccion de i es %p\n", &i)
+printf("El contenido de i es %p\n", *p)
+
+p = el valor de p
+&i = la dirección de i
+*P = el contenido de i (si no lo inicializamos nos da basura)
+
+si no inicializo *p no sabemos a donde apunta p en la memoria nos devuelve una dir de emoria pero no es una cualquiera
+
+si apuntamos el puntero a null (0):
+p = NULL;  --> segmentation violation (intentamos escribir a una dir de memoria a la que no tenemos permiso de acceder)
+
+
+char ocupan 1 byte
+int ocupan 4 bytes
+
+char *c
+int * i
+c= c +4 (la dirección de memoria del char + 4x1 byte posiciones)
+i = i +4 (la direccion d ememoria del int + 4x4 bytes posiciones)
+ 
+ 
+ array en c
+ int p[3] #reservamos las 3 posiciones de p
+ 
+ *p = 1; #en la primera posicion de p guardamos un 1
+ *(p+1) = 2 #en la segunda posición (primera pos + 4 bytes, guardamos un 2)
+ *(p+2) = 3 #en la tercera posición (segunda pos + 4 bytes, guardamos un 3)
+ 
+ Azucar sintáctico: forma bonita de escribir algo en c: *(p+2) es = p[2]
+ 
+ para inicializar el array podemos array[4]= {1, 2, 3, 4} o array[se rellena solo]= {1, 2, 3, 4}
+ ojo con array[7]= {1, 2, 3}
+ 
+en c no existe paso por referencia, pero si queremos hacer el símil de esto en c atravesamos un puntero
+ 
+#include <stdlib.h>
+#include <stdio.h>
+void
+dameletra(char *c)
+{
+*c = ’A’;
+}
+int
+main(int argc, char *argv[])
+{
+char c = ’b’;
+dameletra(&c);
+printf("c es %c\n", c);
+exit(EXIT_SUCCESS);
+}
+  
+  
+  
+ 
+  

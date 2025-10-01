@@ -1,0 +1,22 @@
+Strings: tipo de datos en el que podemos almacenar caracteres "texto"
+en c hay el minimo soporte para strings, la implemenatción basica en c es un puntero a un trozo de memoria con el caracter \0 al final --> {'a','b'',\0'}
+
+char str[]= "hola";
+char str2[] = {'h', 'o', 'l', 'a', '\0'}
+
+la manera para comparara strings es con strcmp con include <string.h>
+
+char *s;
+s= "hola";
+
+ if (strcmp(s, s2)== 0) {
+ 	printf("son iguales\n")
+ }else{
+ 	printf("son diferentes\n"
+ }
+ 
+ funciones básicas del manejo de strings:
+ strcmp
+ strcat:
+ strlen: me da la longitud de una string sin incluir el \0
+ snprintf: imprime en una string, sirve para convertir un entero y lo quiero convertir en una string

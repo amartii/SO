@@ -1,0 +1,5 @@
+for (i=0, i<N, i++) N vueltas hacia arriba
+for(i=N-1, i>0, --1) N vueltas hacia abajo
+
+#recorrerse una lista enlazada
+for(p= l--> first, p!= NULL, p=p-->next)
