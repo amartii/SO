@@ -13,7 +13,9 @@ main(int argc, char **argv){
     
     for (int i = 0; i < 2; i++){
         printf("Introduzca el nombre del perro:\n");
-        scanf("%s", perro[i].name);
+        //gets(perro[i].name); no es seguro, ya qu eno limita los caracteres 
+        //scanf("%s", perro[i].name);
+        fgets(perro[i].name, 20, stdin); //controla los espacios, a diferencia de scanf que considera los espacios como final de linea
         size = strlen(perro[i].name);// Obtiene la longitud del nombre
         printf("%i\n", size);
         perro[i].p_name = malloc((size)*sizeof(char));// Reserva memoria justa para el nombre (podemos truncarla haciendo size-20)
@@ -21,13 +23,18 @@ main(int argc, char **argv){
             printf("Error al asignar memoria\n");
         }else{
             strcpy(perro[i].p_name, perro[i].name);
-            free(perro -> p_name);//liberamos memoria y hacemos referencia al puntero
         }
     }
 
     for (int i = 0; i < 2; i++){
         printf("El nombre del perro es: %s\n", perro[i].p_name);
-        printf("%s\n",perro -> p_name);
+        //printf("%s\n",perro -> p_name); lo mismo que lo de arriba
     }
+    //liberamos memoria correctamente
+    for (int i = 0; i < 2; i++){
+        free(perro[i].p_name);
+        perro[i].p_name = NULL; //le asignamos a NULL si no lo vamos a usar para evitar errores (BUENA PRÁCTICA)
+    }
+
     return 0;
 }
