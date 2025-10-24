@@ -43,7 +43,5 @@ main(int argc, char **argv){
     }
     return 0;
 }
-
-
 //El valor (nil) no es un error: simplemente indica que tu puntero no apunta a ninguna 
 //dirección válida de memoria, ya que lo has inicializado como NULL a propósito
