@@ -14,14 +14,13 @@ main(int argc, char **argv){
     printf("Introduce el retardo:\n");
     scanf("%i", &retardo);*/
 
-    if (argc != 3){
+    if (argc != 4){
         printf("uso: %s longitud retardo\n", argv[0]);
         return 1;
     }
 
     longBarra = atoi(argv[1]);
     retardo = atoi(argv[2]);
-
     for (i = 0; i <= longBarra; i++){
         printf("\r[");
         for(j = 0; j < longBarra; j++){
