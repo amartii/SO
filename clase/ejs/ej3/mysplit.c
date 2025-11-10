@@ -9,9 +9,10 @@ main(int argc, char **argv){
 
     long n;
     char *endn, name[256];
-    int buffer, i;
+    unsigned char *buffer;
     FILE *f, *f2;
     size_t r;
+    long parte = 0;
 
     //compruebo el n de args
     if (argc < 3){
@@ -36,24 +37,35 @@ main(int argc, char **argv){
         return EXIT_FAILURE;
     }
 
-    r = fread(buffer[n], sizeof(int), n, f);
-    for(i = 0; i < n; i++){
-        printf("Buffer[%i]: %i\n", i, buffer[i]);
-        snprintf(name, sizeof(name),"%03ld%s", i, argv[2]);
-        f2 = fopen(argv[2], "wb");
-        fwrite(buffer, sizeof(int), n, f2);
-        fclose(f2);
-        if (r < n){
-            //se termina el archivo origen
-        }
-        //incrementa el contador de bloque
-        
-
+    buffer = malloc(n);
+    if (buffer == NULL){
+        fprintf(stderr, "error: no memory\n");
+        fclose(f);
+        return EXIT_FAILURE;
     }
+
+    while(1){
+        r = fread(buffer, 1, n, f);
+        if(r== 0){
+            break;
+        }
+        snprintf(name, sizeof(name),"%03ld%s", parte, argv[2]);
+        f2 = fopen(name, "wb");
+        if(f2 == NULL){
+            fprintf(stderr, "error: cant create \"%s\"\n", name);
+            fclose(f);
+            return EXIT_FAILURE;
+        }
+        fwrite(buffer, 1, r, f2);
+        fclose(f2);
+        parte++;
+        if (r < n){
+            break;
+        }
+    }
+
+    free(buffer);
     fclose(f);
-    
-    printf("Elementos leidos: %zu\n", r);
-    
 
     return EXIT_SUCCESS;
 }
