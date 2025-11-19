@@ -1,0 +1,10 @@
+encontrar la que tiene más tabuladores al principio y escribir  **nº tabuladores: la linea entera** 
+en caso de empate nos quedamos con la última
+
+leer con fgets, leer linea a linea
+fof y ferror
+libreria strdup para hacer una copia de la string (luego hay que hacer un free)
+
+si se me complica lo de meter tabs /t usar indent.sh
+
+probar con valgrind el código para ver bien los frees
