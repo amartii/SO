@@ -16,29 +16,74 @@ error_cant_open(const char *name){
 }
 
 void
+error_eof(FILE *f){
+    if (ferror(f)) {
+        fprintf(stderr, "error: leyendo fichero\n");
+        fclose(f);
+        exit(EXIT_FAILURE);
+    }
+}
+
+size_t
+count_tabs(const char *linea){
+    size_t num_tabs = 0;
+    while (linea[num_tabs] == '\t'){
+        num_tabs++;
+    }
+    return num_tabs;
+}
+
+void
+max_tabs_line(size_t num_tabs, size_t *max_tabs, char **max_linea, const char *linea){
+    if (num_tabs > *max_tabs || (num_tabs == *max_tabs && num_tabs > 0)) {
+            *max_tabs = num_tabs;
+            free(*max_linea);
+            *max_linea = strdup(linea);
+            if (*max_linea == NULL) {
+                fprintf(stderr, "error: no memory\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+}
+
+void
+print_max_tabs_line(size_t max_tabs, char *max_linea){
+    if (max_linea != NULL) {
+        printf("%zu:%s", max_tabs, max_linea);
+        free(max_linea);
+    }
+}
+
+void
+read_lines(FILE *f, char *linea, size_t *max_tabs, char **max_linea, size_t buffsize){
+    size_t num_tabs = 0;
+     while (fgets(linea, buffsize, f) != NULL) {
+        if(strchr(linea, '\n') == NULL && !feof(f)){
+            fprintf(stderr, "error: line too long\n");
+            fclose(f);
+            exit(EXIT_FAILURE);
+        }
+        num_tabs = count_tabs(linea);
+        max_tabs_line(num_tabs, max_tabs, max_linea, linea);
+    }
+
+}
+
+void
 find_max_tab_line(const char *filename){
     FILE *f;
     char linea[256];
+    char *max_linea = NULL;
+    size_t max_tabs = 0;
 
     f = fopen(filename,"rb");
     if (f == NULL){
         error_cant_open(filename);
     }
-    read_lines(f, linea);
-
-    //hacer una función que lea
-    while (fgets(linea, sizeof(linea), f) != NULL) {
-        //si la linea es muy larga -> error de que la linea es muy larga >256
-        
-        //buscar los tabs
-        printf("%ld\n",strcspn(linea, "\t"));
-        printf("%s", linea);
-        //guardar la linea con los tabs mayor
-        //si la linea nueva tiene mas o igual tabs guardar esa
-
-    }
-
+    read_lines(f, linea, &max_tabs, &max_linea, sizeof(linea));
+    error_eof(f);
     fclose(f);
+    print_max_tabs_line(max_tabs, max_linea);
 }
 
 int
@@ -48,6 +93,5 @@ main(int argc, char **argv){
     }
 
     find_max_tab_line(argv[1]);
-   // printf("%i: %s", num_tabs, line);
     return EXIT_SUCCESS;
 }
