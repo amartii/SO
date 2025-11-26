@@ -1,7 +1,5 @@
-hola b
-que b
-tal b
-yo b
-bien b
-y b
-tu b
+0
+100
+200
+300
+400
