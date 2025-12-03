@@ -1,0 +1,10 @@
+ayuda para el ejercicio de shell 
+touch a b c
+ejecutar --> ./waitfiles.sh /tmp/a tmp/b tmp/c
+
+rm a sigue ejecutando
+rm b sigue ejecutando
+rm c done
+
+error: /tmp/a is not a regular file
+usage waitfile.sh file [files...]
