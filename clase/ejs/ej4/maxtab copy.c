@@ -1,111 +1,0 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
- void 
-usage (void)
-{
-  fprintf (stderr, "usage: ./maxtab file\n");
-  exit (EXIT_FAILURE);
-}  void 
-
-error_cant_open (const char *name)
-{
-  fprintf (stderr, "error: cant open %s\n", name);
-  usage ();
-}  void 
-
-exit_read_error (FILE *f)
-{
-  if (ferror (f))
-    {
-      fprintf (stderr, "error: leyendo fichero\n");
-      fclose (f);
-      exit (EXIT_FAILURE);
-    }
-}
-
- size_t 
-count_tabs (const char *linea)
-{
-  size_t num_tabs = 0;
-  while (linea[num_tabs] == '\t')
-    {
-      num_tabs++;
-    }
-  return num_tabs;
-}
-
- void 
-update_max_tab_line (size_t num_tabs, size_t *max_tabs, char **max_linea,
-		     const char *linea)
-{
-  if (num_tabs > *max_tabs || (num_tabs == *max_tabs && num_tabs > 0))
-    {
-      *max_tabs = num_tabs;
-      free (*max_linea);
-      *max_linea = strdup (linea);
-      if (*max_linea == NULL)
-	{
-	  fprintf (stderr, "error: no memory\n");
-	  exit (EXIT_FAILURE);
-	}
-    }
-}
-
- void 
-print_max_tabs_line (size_t max_tabs, char *max_linea)
-{
-  if (max_linea != NULL)
-    {
-      printf ("%zu:%s", max_tabs, max_linea);
-      free (max_linea);
-    }
-}
-
- void 
-read_lines (FILE *f, char *linea, size_t *max_tabs, char **max_linea,
-	    size_t buffsize)
-{
-  size_t num_tabs = 0;
-  while (fgets (linea, buffsize, f) != NULL)
-    {
-      if (strchr (linea, '\n') == NULL && !feof (f))
-	{
-	  fprintf (stderr, "error: line too long\n");
-	  fclose (f);
-	  exit (EXIT_FAILURE);
-	}
-      num_tabs = count_tabs (linea);
-      update_max_tab_line (num_tabs, max_tabs, max_linea, linea);
-    }
- }
-
- void 
-process_file (const char *filename)
-{
-  FILE * f;
-  char linea[256];
-  char *max_linea = NULL;
-  size_t max_tabs = 0;
-   f = fopen (filename, "rb");
-  if (f == NULL)
-    {
-      error_cant_open (filename);
-    }
-  read_lines (f, linea, &max_tabs, &max_linea, sizeof (linea));
-  exit_read_error (f);
-  fclose (f);
-  print_max_tabs_line (max_tabs, max_linea);
-}
-
- int 
-main (int argc, char **argv)
-{
-  if (argc != 2)
-    {
-      usage ();
-    }
-  process_file (argv[1]);
-  return EXIT_SUCCESS;
-}

@@ -2,13 +2,13 @@
 
 if test $# -lt 1
 then
-	echo usage: waitfiles.sh file [files...] >&2
+	echo usage: waitfiles.sh file [files...] >&2 #por la salida de error >&2
 	exit 1
 fi
 
 for f in "$@"
 do
-	if test ! -f "$f"
+	if test ! -f "$f" #si no es un fichero
 	then
 		echo error: $f is not a regular file >&2
 		exit 1

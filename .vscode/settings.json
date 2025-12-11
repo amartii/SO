@@ -4,5 +4,8 @@
         "string.h": "c",
         "unistd.h": "c",
         "errno.h": "c"
-    }
+    },
+    "markdown-preview-enhanced.automaticallyShowPreviewOfMarkdownBeingEdited": true,
+    "markdown.preview.scrollPreviewWithEditor": true,
+    "markdown.preview.scrollEditorWithPreview": true
 }

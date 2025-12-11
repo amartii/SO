@@ -6,237 +6,217 @@
 #include <sys/wait.h>
 
 void
-usage (void)
+usage(void)
 {
-  fprintf (stderr, "usage: ./pspid [pid]\n");
-  exit (EXIT_FAILURE);
+	fprintf(stderr, "usage: ./pspid [pid]\n");
+	exit(EXIT_FAILURE);
 }
 
 void
-error_bad_value (void)
+error_bad_value(void)
 {
-  fprintf (stderr, "error: bad pid\n");
-  usage ();
+	fprintf(stderr, "error: bad pid\n");
+	usage();
 }
 
 long
-pid_correcto (const char *s)
+pid_correcto(const char *s)
 {
-  char *endn;
-  long n;
+	char *endn;
+	long n;
 
-  errno = 0;
-  n = strtol (s, &endn, 10);
-  if (errno == ERANGE || endn == s || *endn != '\0' || n < 0)
-    {
-      error_bad_value ();
-    }
-
-  return n;
-}
-
-void
-xpipe (int fd[2])
-{
-  if (pipe (fd) == -1)
-    {
-      perror ("pipe");
-      exit (EXIT_FAILURE);
-    }
-}
-
-void
-xclose (int fd)
-{
-  if (close (fd) == -1)
-    {
-      perror ("close");
-      exit (EXIT_FAILURE);
-    }
-}
-
-pid_t
-xwaitpid (pid_t pid, int *status)
-{
-  pid_t r;
-
-  r = waitpid (pid, status, 0);
-  if (r == -1)
-    {
-      perror ("waitpid");
-      exit (EXIT_FAILURE);
-    }
-
-  return r;
-}
-
-void
-run_ps_hijo (int fd[2])
-{
-  xclose (fd[0]);
-
-  if (dup2 (fd[1], STDOUT_FILENO) == -1)
-    {
-      perror ("dup2");
-      exit (EXIT_FAILURE);
-    }
-
-  xclose (fd[1]);
-
-  execlp ("ps", "ps", (char *) NULL);
-  perror ("execlp ps");
-  exit (EXIT_FAILURE);
-}
-
-void
-primer_hijo (int fd[2])
-{
-  pid_t pid;
-
-  pid = fork ();
-  if (pid < 0)
-    {
-      perror ("fork");
-      exit (EXIT_FAILURE);
-    }
-
-  if (pid == 0)
-    {
-      run_ps_hijo (fd);
-    }
-}
-
-int
-leer_pid_de_linea (const char *line, long *pid_out)
-{
-  const char *p = line;
-  int ret;
-
-  while (*p == ' ' || *p == '\t')
-    {
-      p++;
-    }
-
-  ret = sscanf (p, "%ld", pid_out);
-  if (ret == 1)
-    {
-      return 1;
-    }
-
-  return 0;
-}
-
-int
-buscar_pid_en_fichero (FILE *in, long pid_to_find)
-{
-  char line[4096];
-  long col_pid;
-
-  while (fgets (line, sizeof (line), in) != NULL)
-    {
-      if (leer_pid_de_linea (line, &col_pid) && col_pid == pid_to_find)
-	{
-	  return 1;
+	errno = 0;
+	n = strtol(s, &endn, 10);
+	if (errno == ERANGE || endn == s || *endn != '\0' || n < 0) {
+		error_bad_value();
 	}
-    }
 
-  return 0;
+	return n;
 }
 
 void
-run_reader_hijo (int fd_read, long pid_to_find)
+xpipe(int fd[2])
 {
-  FILE *in;
-  int found;
+	if (pipe(fd) == -1) {
+		perror("pipe");
+		exit(EXIT_FAILURE);
+	}
+}
 
-  in = fdopen (fd_read, "r");
-  if (in == NULL)
-    {
-      perror ("fdopen");
-      exit (EXIT_FAILURE);
-    }
-
-  found = buscar_pid_en_fichero (in, pid_to_find);
-
-  if (fclose (in) == EOF)
-    {
-      perror ("fclose");
-      exit (EXIT_FAILURE);
-    }
-
-  if (found)
-    {
-      exit (EXIT_SUCCESS);
-    }
-
-  exit (EXIT_FAILURE);
+void
+xclose(int fd)
+{
+	if (close(fd) == -1) {
+		perror("close");
+		exit(EXIT_FAILURE);
+	}
 }
 
 pid_t
-segundo_hijo (int fd[2], long pid_to_find)
+xwaitpid(pid_t pid, int *status)
 {
-  pid_t pid;
+	pid_t r;
 
-  pid = fork ();
-  if (pid < 0)
-    {
-      perror ("fork");
-      exit (EXIT_FAILURE);
-    }
+	r = waitpid(pid, status, 0);
+	if (r == -1) {
+		perror("waitpid");
+		exit(EXIT_FAILURE);
+	}
 
-  if (pid == 0)
-    {
-      xclose (fd[1]);
-      run_reader_hijo (fd[0], pid_to_find);
-    }
-
-  return pid;
+	return r;
 }
 
 void
-padre (long pid_to_find)
+run_ps_hijo(int fd[2])
 {
-  int fd[2];
-  int status;
-  pid_t pid2;
-  pid_t wpid;
+	xclose(fd[0]);
 
-  xpipe (fd);
+	if (dup2(fd[1], STDOUT_FILENO) == -1) {
+		perror("dup2");
+		exit(EXIT_FAILURE);
+	}
 
-  primer_hijo (fd);
-  pid2 = segundo_hijo (fd, pid_to_find);
+	xclose(fd[1]);
 
-  xclose (fd[0]);
-  xclose (fd[1]);
+	execlp("ps", "ps", (char *)NULL);
+	perror("execlp ps");
+	exit(EXIT_FAILURE);
+}
 
-  xwaitpid (pid2, &status);
+void
+primer_hijo(int fd[2])
+{
+	pid_t pid;
 
-  do
-    {
-      wpid = wait (NULL);
-    }
-  while (wpid > 0 || (wpid == -1 && errno == EINTR));
+	pid = fork();
+	if (pid < 0) {
+		perror("fork");
+		exit(EXIT_FAILURE);
+	}
 
-  if (WIFEXITED (status))
-    {
-      exit (WEXITSTATUS (status));
-    }
-
-  exit (EXIT_FAILURE);
+	if (pid == 0) {
+		run_ps_hijo(fd);
+	}
 }
 
 int
-main (int argc, char **argv)
+leer_pid_de_linea(const char *line, long *pid_out)
 {
-  long n;
+	const char *p = line;
+	int ret;
 
-  if (argc != 2)
-    {
-      usage ();
-    }
+	while (*p == ' ' || *p == '\t') {
+		p++;
+	}
 
-  n = pid_correcto (argv[1]);
-  padre (n);
+	ret = sscanf(p, "%ld", pid_out);
+	if (ret == 1) {
+		return 1;
+	}
 
-  return EXIT_SUCCESS;
+	return 0;
+}
+
+int
+buscar_pid_en_fichero(FILE *in, long pid_to_find)
+{
+	char line[4096];
+	long col_pid;
+
+	while (fgets(line, sizeof(line), in) != NULL) {
+		if (leer_pid_de_linea(line, &col_pid) && col_pid == pid_to_find) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+void
+run_reader_hijo(int fd_read, long pid_to_find)
+{
+	FILE *in;
+	int found;
+
+	in = fdopen(fd_read, "r");
+	if (in == NULL) {
+		perror("fdopen");
+		exit(EXIT_FAILURE);
+	}
+
+	found = buscar_pid_en_fichero(in, pid_to_find);
+
+	if (fclose(in) == EOF) {
+		perror("fclose");
+		exit(EXIT_FAILURE);
+	}
+
+	if (found) {
+		exit(EXIT_SUCCESS);
+	}
+
+	exit(EXIT_FAILURE);
+}
+
+pid_t
+segundo_hijo(int fd[2], long pid_to_find)
+{
+	pid_t pid;
+
+	pid = fork();
+	if (pid < 0) {
+		perror("fork");
+		exit(EXIT_FAILURE);
+	}
+
+	if (pid == 0) {
+		xclose(fd[1]);
+		run_reader_hijo(fd[0], pid_to_find);
+	}
+
+	return pid;
+}
+
+void
+padre(long pid_to_find)
+{
+	int fd[2];
+	int status;
+	pid_t pid2;
+	pid_t wpid;
+
+	xpipe(fd);
+
+	primer_hijo(fd);
+	pid2 = segundo_hijo(fd, pid_to_find);
+
+	xclose(fd[0]);
+	xclose(fd[1]);
+
+	xwaitpid(pid2, &status);
+
+	do {
+		wpid = wait(NULL);
+	} while (wpid > 0 || (wpid == -1 && errno == EINTR));
+
+	if (WIFEXITED(status)) {
+		exit(WEXITSTATUS(status));
+	}
+
+	exit(EXIT_FAILURE);
+}
+
+int
+main(int argc, char **argv)
+{
+	long n;
+
+	if (argc != 2) {
+		usage();
+	}
+
+	n = pid_correcto(argv[1]);
+	padre(n);
+
+	return EXIT_SUCCESS;
 }
