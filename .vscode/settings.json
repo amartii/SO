@@ -1,10 +1,12 @@
 {
+    // Asociaciones de archivos
     "files.associations": {
         "stdlib.h": "c",
         "string.h": "c",
         "unistd.h": "c",
         "errno.h": "c"
     },
+    // Configuración de Markdown
     "markdown-preview-enhanced.automaticallyShowPreviewOfMarkdownBeingEdited": true,
     "markdown.preview.scrollPreviewWithEditor": true,
     "markdown.preview.scrollEditorWithPreview": true

@@ -1003,13 +1003,3 @@ sort, uniq, tail, head, tr, grep, sed
 ```
 
 ---
-
-## SIGUIENTE PASO
-
-Una vez que domines estos conceptos y hayas practicado con los scripts de ejemplo:
-
-1. **Crea los scripts de prueba** en tu máquina y ejecútalos.
-2. **Modifica los ejemplos** para experimentar.
-3. **Combina conceptos**: funciones + bucles + test + pipes.
-
-**Cuando estés listo**, pasaremos a resolver el ejercicio **`catlen.sh`** usando toda esta teoría.
