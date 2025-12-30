@@ -23,8 +23,7 @@ comprobar_dir(){
 
 entrada_correcta(){
     collection="$1"
-    shift          # ahora "$@" son solo los dirs de fotos
-
+    shift       
     for dir in "$@"
     do 
         comprobar_dir "$dir"
@@ -33,7 +32,6 @@ entrada_correcta(){
 
 prep_collection(){
     col="$1"
-
     if test -d "$col"
     then
         rm -rf "$col"/* 2>/dev/null
@@ -79,46 +77,30 @@ detectar_colision(){
 
 num_args "$@"
 entrada_correcta "$@"
-
 collection="$1"
-shift               # dirs de fotos quedan en "$@"
-
+shift           
 prep_collection "$collection"
-
-#listamos las fotos
-echo lista de fotos:
-find "$@" \( -iname "*.png" -o -iname "*.tiff" -o -iname "*.jpg" -o -iname "*.jpeg" \) -print
 
 meta="$collection/metadata.txt"
 : > "$meta"
 size_total=0
 
-find "$@" \( -iname "*.png" -o -iname "*.tiff" -o -iname "*.jpg" -o -iname "*.jpeg" \) -print |
-while read ruta
+tmp_fotos=$(mktemp) || exit 1
+find "$@" \( -iname "*.png" -o -iname "*.tiff" -o -iname "*.jpg" -o -iname "*.jpeg" \) -print > "$tmp_fotos"
+
+while IFS= read -r ruta
 do 
     nombre_final=$(formato "$ruta") || continue
     detectar_colision "$nombre_final"
     cp -- "$ruta" "$collection/$nombre_final" || exit 1
-
     size=$(wc -c < "$collection/$nombre_final")
     size_total=$((size_total + size))
-
     echo "$nombre_final $size" >> "$meta"
-done
+done < "$tmp_fotos"
+rm -f "$tmp_fotos"
 
-# ordenar por tamaño numérico
 sort -n -k2 "$meta" > "$meta.sorted"
 mv "$meta.sorted" "$meta"
-
-# añadir TOTAL al final
 echo "TOTAL: $size_total bytes" >> "$meta"
 
-echo -------
-echo metadata.txt:
-echo  
-cat $meta
-
-
 exit 0
-
-
