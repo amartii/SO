@@ -1,10 +1,10 @@
-verano_playa.png 204
-verano_cena-de-gala.png 233051
-d1_img04.jpg 347592
-d1_img02.jpg 394324
-verano_avion.png 450751
-d1_img01.jpg 1528945
-d1_img011.jpg 1528945
-d2_img01.jpg 1528945
-d2_img04.tiff 1533241
+verano_playa.png	204
+verano_cena-de-gala.png	233051
+d1_img04.jpg	347592
+d1_img02.jpg	394324
+verano_avion.png	450751
+d1_img01.jpg	1528945
+d1_img011.jpg	1528945
+d2_img01.jpg	1528945
+d2_img04.tiff	1533241
 TOTAL: 7545998 bytes
