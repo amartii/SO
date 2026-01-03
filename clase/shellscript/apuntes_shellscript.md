@@ -714,23 +714,44 @@ hola|adiós→ Encaja: hola o adiós
 
 ---
 
-### 16. GREP Y EGREP
+## PARTE XII: GREP Y EGREP
 
-#### **egrep:** Busca líneas que encajen con una expresión regular
+### 16. COMANDO EGREP: BÚSQUEDA CON EXPRESIONES REGULARES
 
+`egrep` es un filtro que escribe las líneas que encajan con una expresión regular.
+
+**Sintaxis:**
 ```sh
-egrep [opciones] 'expresión_regular' [fichero]
+egrep [opciones] 'expresión_regular' [fichero...]
 ```
+
+#### **Opciones útiles:**
 
 | Opción | Significado |
 |--------|-------------|
-| `-v` | Inverso: líneas que NO encajen |
+| `-v` | Invertir: líneas que no encajan |
 | `-n` | Mostrar número de línea |
-| `-q` | Silencioso (solo status) |
+| `-q` | Silencioso (solo status de salida) |
 | `-i` | Ignorar mayúsculas/minúsculas |
-| `-c` | Contar coincidencias |
+| `-c` | Contar líneas que encajan |
 
-**Ejemplo: `prueba_egrep.sh`**
+#### **Ejemplos de uso:**
+
+```sh
+# Líneas con un número de 2 dígitos
+egrep '[0-9][0-9]' datos.txt
+
+# Comprobar si hay alguna línea que empiece por ERROR
+if egrep -q '^ERROR' log.txt
+then
+    echo "Hay errores"
+fi
+
+# Filtrar líneas que NO contengan la palabra tmp
+egrep -v 'tmp' /etc/fstab
+```
+
+**Ejemplo completo: `prueba_egrep.sh`**
 ```sh
 #!/bin/sh
 
@@ -759,29 +780,52 @@ exit 0
 
 ---
 
-### 17. SED: STREAM EDITOR
+## PARTE XIII: SED - STREAM EDITOR
+
+### 17. COMANDO SED: EDITOR DE FLUJOS
 
 `sed` es un **editor de flujos**: aplica comandos a cada línea de entrada.
 
-#### **Comandos básicos:**
+#### **Sintaxis básica:**
+
+```sh
+sed 'COMANDOS' fichero
+```
+
+#### **Comandos importantes:**
 
 | Comando | Significado |
 |---------|-------------|
+| `s/viejo/nuevo/` | Sustituir la primera coincidencia |
+| `s/viejo/nuevo/g` | Sustituir todas las coincidencias |
 | `d` | Borrar la línea |
-| `p` | Imprimir la línea |
-| `s/viejo/nuevo/` | Sustituir primera ocurrencia |
-| `s/viejo/nuevo/g` | Sustituir todas las ocurrencias |
+| `p` | Imprimir la línea (útil con `-n`) |
 | `q` | Salir |
 
-#### **Direcciones (dónde actuar):**
-```
-sed 's/viejo/nuevo/' fichero          # Primera ocurrencia de cada línea
-sed '2s/viejo/nuevo/' fichero         # Solo línea 2
-sed '1,5s/viejo/nuevo/' fichero       # Líneas 1 a 5
-sed '/patrón/s/viejo/nuevo/' fichero  # Líneas que encajen con patrón
+#### **Selección de líneas (direcciones):**
+
+```sh
+sed '3d' fichero              # borrar línea 3
+sed '1,5d' fichero            # borrar líneas 1 a 5
+sed '/ERROR/d' fichero        # borrar las que contienen ERROR
+sed '/^#/d' fichero           # borrar comentarios que empiezan por #
+sed '5,10s/foo/bar/g' fichero # solo líneas 5–10
 ```
 
-**Ejemplo: `prueba_sed.sh`**
+#### **Ejemplos de uso:**
+
+```sh
+# Cambiar 'mundo' por 'universo'
+sed 's/mundo/universo/' mensaje.txt
+
+# Cambiar todas las apariciones
+sed 's/mundo/universo/g' mensaje.txt
+
+# Eliminar líneas en blanco
+sed '/^$/d' mensaje.txt
+```
+
+**Ejemplo completo: `prueba_sed.sh`**
 ```sh
 #!/bin/sh
 
@@ -812,22 +856,160 @@ rm /tmp/datos.txt
 exit 0
 ```
 
-#### **Sustituciones con referencias hacia atrás (backreferences):**
+#### **Sustituciones con backreferences (referencias hacia atrás):**
 
-Si usas `sed -E` (extended regex) y agrupaciones `(...)`, puedes referir lo que encajó:
+Con `sed -E` (expresiones regulares extendidas) y agrupaciones `(...)`, puedes referir lo que encajó:
 
 ```sh
-echo "Juan 25" | sed -E 's/([A-Za-z]+) ([0-9]+)/Nombre: \1, Edad: \2/'
-# Salida: Nombre: Juan, Edad: 25
+echo "Juan 25" | sed -E 's/([A-Za-z]+)[ ]+([0-9]+)/Nombre: \1, Edad: \2/'
+# → Nombre: Juan, Edad: 25
 ```
 
 ---
 
-## PARTE XII: FILTROS ÚTILES
+## PARTE XIV: AWK - PROCESADOR DE TEXTO POR CAMPOS
 
-### 18. SORT, UNIQ, TAIL, HEAD
+### 18. COMANDO AWK: LENGUAJE DE PROCESAMIENTO
 
-#### **sort: Ordenar líneas**
+`awk` es un lenguaje completo pensado para procesar texto por columnas.
+
+**Estructura general:**
+
+```sh
+awk 'patrón { acciones }' fichero
+```
+
+#### **Variables predefinidas:**
+
+| Variable | Significado |
+|----------|-------------|
+| `$0` | Línea completa |
+| `$1, $2, ...` | Campos de la línea |
+| `NF` | Número de campos |
+| `NR` | Número de línea (registro actual) |
+| `FS` | Separador de campos (por defecto: espacios/tabuladores) |
+
+#### **Separador de campos:**
+
+Por defecto, espacios y tabuladores. Se puede cambiar con `-F`:
+
+```sh
+awk -F: '{print $1}' /etc/passwd    # separador ':'
+awk -F, '{print $2}' datos.csv      # separador ','
+```
+
+#### **Ejemplos básicos:**
+
+```sh
+# Imprimir primera columna
+awk '{ print $1 }' datos.txt
+
+# Usar separador coma (CSV) y sacar columna 3 y 2
+awk -F, '{ printf("%s\t%s\n", $3, $2) }' datos.csv
+
+# Mostrar nombre y tamaño de ficheros
+ls -l | awk '{ printf("Size:%08d bytes\tFichero:%s\n", $5, $9) }'
+```
+
+#### **Filtrar por patrón:**
+
+```sh
+# Líneas que contienen ERROR
+awk '/ERROR/ { print $0 }' log.txt
+
+# Solo líneas 5 a 10
+awk 'NR >= 5 && NR <= 10 { print $0 }' fichero
+
+# Solo las que tengan más de 3 campos
+awk 'NF > 3 { print $0 }' fichero
+```
+
+#### **Inicialización y finalización:**
+
+```sh
+awk '
+BEGIN { suma = 0 }
+      { suma += $1 }
+END   { printf("Suma: %d\n", suma) }
+' numeros.txt
+```
+
+#### **Arrays asociativos (contar repeticiones):**
+
+```sh
+awk '
+{ dups[$0]++ }
+END {
+    for (linea in dups) {
+        print dups[linea], linea
+    }
+}' datos.txt
+```
+
+---
+
+## PARTE XV: RECORRER ÁRBOLES DE DIRECTORIOS
+
+### 19. COMANDO DU: USO DE DISCO
+
+`du` informa del uso de disco. Con `-a` muestra todos los ficheros y directorios por debajo de una ruta.
+
+```sh
+du -a .           # listar tamaños de todo el árbol bajo el directorio actual
+du -ah /var/log   # lo mismo, con tamaños "humanos"
+```
+
+**Combinado con otros filtros:**
+
+```sh
+# Ver los 10 elementos más "pesados"
+du -a . | sort -n | tail -n 10
+```
+
+---
+
+### 20. COMANDO FIND: BÚSQUEDA Y ACCIONES
+
+`find` recorre un árbol aplicando pruebas y acciones.
+
+**Patrón típico:**
+
+```sh
+find RUTA [pruebas] [acciones]
+```
+
+#### **Ejemplos:**
+
+```sh
+# Todos los ficheros bajo .
+find . -type f
+
+# Ficheros .c
+find . -type f -name '*.c'
+
+# Directorios vacíos
+find . -type d -empty
+
+# Ficheros modificados en los últimos 7 días
+find . -type f -mtime -7
+```
+
+#### **Con `-exec` para ejecutar comandos:**
+
+```sh
+# Borrar todos los .o
+find . -type f -name '*.o' -exec rm -f {} \;
+
+# Cambiar permisos a todos los scripts .sh
+find . -type f -name '*.sh' -exec chmod u+x {} \;
+```
+
+---
+
+## PARTE XVI: FILTROS Y HERRAMIENTAS DE TEXTO
+
+### 21. SORT: ORDENAR LÍNEAS
+
 ```sh
 sort fichero                 # Orden alfanumérico
 sort -n fichero              # Orden numérico
@@ -835,58 +1017,44 @@ sort -k2 -t: fichero         # Ordenar por campo 2 con separador ':'
 sort -u fichero              # Ordenar y eliminar duplicados
 ```
 
-#### **uniq: Eliminar líneas contiguas duplicadas**
+---
+
+### 22. UNIQ: ELIMINAR DUPLICADOS
+
 ```sh
-uniq fichero                 # Eliminar duplicados
+uniq fichero                 # Eliminar duplicados contiguos
 uniq -c fichero              # Contar duplicados
-uniq -d fichero              # Mostrar solo duplicados
+uniq -d fichero              # Solo las líneas repetidas
 ```
 
-#### **tail: Últimas líneas; head: Primeras líneas**
+Normalmente se combina con `sort`:
+
 ```sh
-tail -n 3 fichero            # Últimas 3 líneas
-head -n 5 fichero            # Primeras 5 líneas
-tail -f fichero              # Seguir fichero (útil para logs)
-```
-
-**Ejemplo: `prueba_filtros.sh`**
-```sh
-#!/bin/sh
-
-# Crear fichero
-cat > /tmp/numeros.txt << 'EOF'
-3
-1
-4
-1
-5
-9
-2
-6
-EOF
-
-echo "=== Original ==="
-cat /tmp/numeros.txt
-
-echo ""
-echo "=== Ordenado numéricamente ==="
-sort -n /tmp/numeros.txt
-
-echo ""
-echo "=== Ordenado y sin duplicados ==="
-sort -nu /tmp/numeros.txt
-
-echo ""
-echo "=== Últimas 3 líneas ==="
-tail -n 3 /tmp/numeros.txt
-
-rm /tmp/numeros.txt
-exit 0
+sort palabras.txt | uniq -c | sort -nr
 ```
 
 ---
 
-### 19. TR: TRADUCCIÓN DE CARACTERES
+### 23. TAIL Y HEAD: PRIMERAS Y ÚLTIMAS LÍNEAS
+
+```sh
+head -n 5 fichero            # Primeras 5 líneas
+tail -n 10 fichero           # Últimas 10 líneas
+tail -f /var/log/syslog      # Seguir un log en tiempo real
+```
+
+---
+
+### 24. CUT Y PASTE: CAMPOS Y COLUMNAS
+
+```sh
+cut -d: -f1,3 /etc/passwd      # campos 1 y 3, separador ':'
+paste nombres.txt notas.txt    # pegar columnas de dos ficheros
+```
+
+---
+
+### 25. TR: TRADUCCIÓN DE CARACTERES
 
 `tr` traduce o elimina caracteres:
 
@@ -913,9 +1081,49 @@ exit 0
 
 ---
 
-## PARTE XIII: REDIRECCIONES Y PIPES
+### 26. JOIN: INNER JOIN RELACIONAL
 
-### 20. REDIRECCIONES
+`join` hace un inner join entre dos ficheros ordenados por la clave.
+
+**Requisitos:**
+- Ambos ficheros deben estar ordenados por la columna usada como clave.
+- Por defecto, usa la primera columna, con separadores de espacio/tabulador.
+
+**Ejemplo:**
+
+```sh
+echo 'a bla
+b ble
+c blo' > a.txt
+
+echo 'a ta
+b te
+c to' > b.txt
+
+join a.txt b.txt
+# a bla ta
+# b ble te
+# c blo to
+```
+
+Si no están ordenados:
+
+```sh
+sort a.txt -o a.txt
+sort b.txt -o b.txt
+join a.txt b.txt
+```
+
+**Opciones útiles:**
+- `-1 N`: columna de clave en el primer fichero
+- `-2 N`: columna de clave en el segundo
+- `-t SEP`: separador de campos
+
+---
+
+## PARTE XVII: REDIRECCIONES Y PIPES
+
+### 27. REDIRECCIONES
 
 ```sh
 comando > fichero       # Salida estándar a fichero (trunca)
@@ -925,7 +1133,9 @@ comando 2>&1            # Salida de error a salida estándar
 comando < fichero       # Entrada desde fichero
 ```
 
-### 21. PIPES (TUBERÍAS)
+---
+
+### 28. PIPES (TUBERÍAS)
 
 ```sh
 comando1 | comando2     # Salida de comando1 → Entrada de comando2
@@ -951,6 +1161,37 @@ cat /tmp/error.txt
 rm /tmp/error.txt
 
 exit 0
+```
+
+---
+
+### 29. XARGS: CONSTRUCCIÓN DE COMANDOS
+
+`xargs` construye y ejecuta comandos a partir de la entrada estándar.
+
+**Sintaxis típica:**
+
+```sh
+comando_que_lista | xargs otro_comando
+```
+
+#### **Ejemplos:**
+
+```sh
+# Ver en una columna los ficheros a, b, c
+echo a b c | xargs ls -1
+
+# Borrar todos los .o bajo el árbol
+find . -type f -name '*.o' -print | xargs rm -f
+
+# Buscar una cadena en todos los .c
+find . -type f -name '*.c' -print | xargs egrep 'main\('
+```
+
+**Con nombres con espacios (variante "segura" -print0 / -0):**
+
+```sh
+find . -type f -name '*.c' -print0 | xargs -0 egrep 'main\('
 ```
 
 ---
@@ -998,8 +1239,17 @@ egrep 'patrón' fichero
 sed 's/viejo/nuevo/g' fichero
 sed '/patrón/d' fichero
 
+# Awk
+awk '{ print $1 }' fichero
+awk -F: '{ print $3 }' fichero
+
 # Filtros
-sort, uniq, tail, head, tr, grep, sed
+sort, uniq, tail, head, tr, grep, sed, awk, cut, paste, join
+
+# Utilitarios
+du, find, xargs
 ```
 
 ---
+
+**Fin del documento**
