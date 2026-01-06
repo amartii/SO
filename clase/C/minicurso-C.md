@@ -1273,5 +1273,3 @@ gcc -g -o programa archivo.o
 ```
 
 ---
-
-**Fin del documento**

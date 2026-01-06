@@ -1252,4 +1252,3 @@ du, find, xargs
 
 ---
 
-**Fin del documento**
