@@ -19,36 +19,36 @@ n = strtol(argv[1], &endn, 10);
 if (errno == ERANGE || endn == argv[1] || *endn != '\0' || n < 0) { ... }
 ```
 Que comprueba exactamente `*endn != '\0'`?
-- a) Que el numero no se salga del rango de `long`
-- b) Que se consumio TODA la cadena (no hay caracteres sobrantes tras el numero)
-- c) Que el numero es positivo
-- d) Que `argv[1]` no es NULL
-- e) Que la base es 10
+- [ ] a) Que el numero no se salga del rango de `long`
+- [ ] b) Que se consumio TODA la cadena (no hay caracteres sobrantes tras el numero)
+- [ ] c) Que el numero es positivo
+- [ ] d) Que `argv[1]` no es NULL
+- [ ] e) Que la base es 10
 
 ### Pregunta 2
 `necho` imprime cada palabra con `printf("%.*s\n", (int)l, argv[i])`. Que hace `%.*s`?
-- a) Imprime la cadena en mayusculas
-- b) Imprime como maximo `l` caracteres de la cadena (precision dada por el argumento)
-- c) Repite la cadena `l` veces
-- d) Imprime la cadena rellenada con espacios hasta `l`
-- e) Es un error de formato, no compila
+- [ ] a) Imprime la cadena en mayusculas
+- [ ] b) Imprime como maximo `l` caracteres de la cadena (precision dada por el argumento)
+- [ ] c) Repite la cadena `l` veces
+- [ ] d) Imprime la cadena rellenada con espacios hasta `l`
+- [ ] e) Es un error de formato, no compila
 
 ### Pregunta 3
 Si se ejecuta `./necho 2 3 hola mundo adios` (N=2 ultimas palabras, L=3), que imprime?
-- a) `hol` y `mun`
-- b) `mun` y `adi`
-- c) `hola` y `mundo`
-- d) `adi`
-- e) `hol`, `mun` y `adi`
+- [ ] a) `hol` y `mun`
+- [ ] b) `mun` y `adi`
+- [ ] c) `hola` y `mundo`
+- [ ] d) `adi`
+- [ ] e) `hol`, `mun` y `adi`
 
 ### Pregunta 4
 En `necho`, si `N` (numero de palabras pedidas) es mayor que las palabras disponibles
 (`words = argc - 3`), el codigo hace `if (n > words) n = words;`. Por que?
-- a) Para provocar un error controlado
-- b) Para no leer fuera de `argv` (evitar acceso invalido)
-- c) Porque `strtol` lo exige
-- d) Para truncar las palabras
-- e) No tiene efecto, es codigo muerto
+- [ ] a) Para provocar un error controlado
+- [ ] b) Para no leer fuera de `argv` (evitar acceso invalido)
+- [ ] c) Porque `strtol` lo exige
+- [ ] d) Para truncar las palabras
+- [ ] e) No tiene efecto, es codigo muerto
 
 ---
 
@@ -56,37 +56,37 @@ En `necho`, si `N` (numero de palabras pedidas) es mayor que las palabras dispon
 
 ### Pregunta 5
 `searchstr` exige que el numero de argumentos (`args = argc - 1`) sea:
-- a) Impar y mayor que 0
-- b) Par y mayor que 0
-- c) Exactamente 2
-- d) Cualquiera
-- e) Multiplo de 3
+- [ ] a) Impar y mayor que 0
+- [ ] b) Par y mayor que 0
+- [ ] c) Exactamente 2
+- [ ] d) Cualquiera
+- [ ] e) Multiplo de 3
 
 ### Pregunta 6
 Cada hijo ejecuta `execl("/usr/bin/fgrep", "fgrep", argv[i+1], argv[i], (char *)NULL)`.
 Que representa cada cosa?
-- a) `argv[i]` es la cadena a buscar y `argv[i+1]` el fichero
-- b) `argv[i]` es el fichero y `argv[i+1]` la cadena a buscar
-- c) Ambos son ficheros
-- d) Ambos son cadenas
-- e) `argv[i]` es una opcion de fgrep
+- [ ] a) `argv[i]` es la cadena a buscar y `argv[i+1]` el fichero
+- [ ] b) `argv[i]` es el fichero y `argv[i+1]` la cadena a buscar
+- [ ] c) Ambos son ficheros
+- [ ] d) Ambos son cadenas
+- [ ] e) `argv[i]` es una opcion de fgrep
 
 ### Pregunta 7
 El padre recoge los hijos con `while ((pid = wait(&status)) != -1)` y trata como ERROR los
 que salen con `WEXITSTATUS(status) > 1`. Por que `> 1` y no `> 0`?
-- a) Porque grep/fgrep devuelve 0 si encuentra, 1 si NO encuentra (no es error), y >1 si hay error real
-- b) Porque el primer hijo siempre falla
-- c) Porque hay que ignorar el primer hijo
-- d) Es un bug, deberia ser `> 0`
-- e) Porque `wait` devuelve 1 al terminar
+- [ ] a) Porque grep/fgrep devuelve 0 si encuentra, 1 si NO encuentra (no es error), y >1 si hay error real
+- [ ] b) Porque el primer hijo siempre falla
+- [ ] c) Porque hay que ignorar el primer hijo
+- [ ] d) Es un bug, deberia ser `> 0`
+- [ ] e) Porque `wait` devuelve 1 al terminar
 
 ### Pregunta 8
 Por que `searchstr` crea los procesos en un bucle ANTES de hacer los `wait`?
-- a) Para que los fgrep se ejecuten en PARALELO (no esperar a uno antes de lanzar el siguiente)
-- b) Porque `wait` no funciona dentro del bucle
-- c) Para ahorrar memoria
-- d) Es indiferente, el resultado es el mismo en tiempo
-- e) Para evitar zombies
+- [ ] a) Para que los fgrep se ejecuten en PARALELO (no esperar a uno antes de lanzar el siguiente)
+- [ ] b) Porque `wait` no funciona dentro del bucle
+- [ ] c) Para ahorrar memoria
+- [ ] d) Es indiferente, el resultado es el mismo en tiempo
+- [ ] e) Para evitar zombies
 
 ---
 
@@ -95,38 +95,38 @@ Por que `searchstr` crea los procesos en un bucle ANTES de hacer los `wait`?
 ### Pregunta 9
 `mysplit` abre el fichero con `fopen(filename, "rb")` y los trozos con `fopen(name, "wb")`.
 Por que el modo binario (`b`)?
-- a) Para comprimir
-- b) Para tratar cualquier byte tal cual, sin traducciones de fin de linea
-- c) Es obligatorio en Linux para todo
-- d) Para que `fread` cuente lineas
-- e) No tiene efecto en ningun sistema
+- [ ] a) Para comprimir
+- [ ] b) Para tratar cualquier byte tal cual, sin traducciones de fin de linea
+- [ ] c) Es obligatorio en Linux para todo
+- [ ] d) Para que `fread` cuente lineas
+- [ ] e) No tiene efecto en ningun sistema
 
 ### Pregunta 10
 Los trozos se nombran con `snprintf(name, sizeof(name), "%03ld%s", parte, filename)`. Para
 un fichero `datos.txt` partido en 2 trozos, los nombres son:
-- a) `datos.txt.0` y `datos.txt.1`
-- b) `000datos.txt` y `001datos.txt`
-- c) `datos000.txt` y `datos001.txt`
-- d) `0datos.txt` y `1datos.txt`
-- e) `parte0` y `parte1`
+- [ ] a) `datos.txt.0` y `datos.txt.1`
+- [ ] b) `000datos.txt` y `001datos.txt`
+- [ ] c) `datos000.txt` y `datos001.txt`
+- [ ] d) `0datos.txt` y `1datos.txt`
+- [ ] e) `parte0` y `parte1`
 
 ### Pregunta 11
 El bucle de lectura termina cuando `fread` devuelve 0, y tambien con `if (r < n) break;` al
 final. Que significa que `fread` devuelva menos de `n`?
-- a) Que hubo un error siempre
-- b) Que se llego al final del fichero (ultimo trozo, posiblemente incompleto)
-- c) Que el buffer es demasiado pequeño
-- d) Que hay que volver a abrir el fichero
-- e) Que `n` era negativo
+- [ ] a) Que hubo un error siempre
+- [ ] b) Que se llego al final del fichero (ultimo trozo, posiblemente incompleto)
+- [ ] c) Que el buffer es demasiado pequeño
+- [ ] d) Que hay que volver a abrir el fichero
+- [ ] e) Que `n` era negativo
 
 ### Pregunta 12
 Si `malloc(n)` falla, `mysplit` hace `error_no_memory(); fclose(f); return EXIT_FAILURE;`.
 Que buena practica ilustra el `fclose(f)` antes de salir?
-- a) Liberar recursos (el fichero abierto) aunque haya error
-- b) Forzar el flush del buffer de lectura
-- c) Es innecesario, el SO lo cierra
-- d) Evitar un deadlock
-- e) Cerrar el pipe
+- [ ] a) Liberar recursos (el fichero abierto) aunque haya error
+- [ ] b) Forzar el flush del buffer de lectura
+- [ ] c) Es innecesario, el SO lo cierra
+- [ ] d) Evitar un deadlock
+- [ ] e) Cerrar el pipe
 
 ---
 
@@ -135,29 +135,29 @@ Que buena practica ilustra el `fclose(f)` antes de salir?
 ### Pregunta 13
 En `ficheros.c` se escribe con `fwrite(buffer, sizeof(int), 5, f)` un array `{0,10,20,30,40}`.
 Cuantos BYTES ocupa el fichero `a.txt` resultante (enteros de 4 bytes)?
-- a) 5
-- b) 10
-- c) 20
-- d) 40
-- e) Depende del contenido
+- [ ] a) 5
+- [ ] b) 10
+- [ ] c) 20
+- [ ] d) 40
+- [ ] e) Depende del contenido
 
 ### Pregunta 14
 El fichero `b.txt` se escribe con `fprintf(f, "%d\n", i*100)`. En que se diferencia de
 `a.txt` (escrito con `fwrite`)?
-- a) En nada, son identicos
-- b) `b.txt` es texto legible ("0\n100\n...") y `a.txt` son bytes binarios crudos
-- c) `a.txt` es texto y `b.txt` binario
-- d) `b.txt` ocupa menos siempre
-- e) `a.txt` no se puede leer con `fread`
+- [ ] a) En nada, son identicos
+- [ ] b) `b.txt` es texto legible ("0\n100\n...") y `a.txt` son bytes binarios crudos
+- [ ] c) `a.txt` es texto y `b.txt` binario
+- [ ] d) `b.txt` ocupa menos siempre
+- [ ] e) `a.txt` no se puede leer con `fread`
 
 ### Pregunta 15
 Para releer los enteros de texto de `b.txt` se usa `while (fscanf(f, "%i", &v) == 1)`. Por
 que se compara con `== 1`?
-- a) Porque hay un solo numero por linea
-- b) Porque `fscanf` devuelve el NUMERO DE CAMPOS leidos con exito; 1 significa que leyo el entero
-- c) Porque `1` es el descriptor de stdout
-- d) Porque el bucle solo debe correr una vez
-- e) Porque `v` empieza en 1
+- [ ] a) Porque hay un solo numero por linea
+- [ ] b) Porque `fscanf` devuelve el NUMERO DE CAMPOS leidos con exito; 1 significa que leyo el entero
+- [ ] c) Porque `1` es el descriptor de stdout
+- [ ] d) Porque el bucle solo debe correr una vez
+- [ ] e) Porque `v` empieza en 1
 
 ---
 
@@ -166,27 +166,27 @@ que se compara con `== 1`?
 ### Pregunta 16
 `myls` recorre el directorio con `opendir`/`readdir` y obtiene metadatos con
 `lstat(ent->d_name, &statbuf)`. Por que `lstat` y no `stat`?
-- a) `lstat` es mas rapido
-- b) `lstat` NO sigue los enlaces simbolicos, asi puede mostrarlos como tipo enlace ('l')
-- c) `stat` no existe
-- d) `lstat` lista el directorio entero de una vez
-- e) Son equivalentes
+- [ ] a) `lstat` es mas rapido
+- [ ] b) `lstat` NO sigue los enlaces simbolicos, asi puede mostrarlos como tipo enlace ('l')
+- [ ] c) `stat` no existe
+- [ ] d) `lstat` lista el directorio entero de una vez
+- [ ] e) Son equivalentes
 
 ### Pregunta 17
 La funcion `what_type` hace `switch (mode & S_IFMT)`. Para que sirve `& S_IFMT`?
-- a) Extrae los bits de PERMISOS del fichero
-- b) Extrae los bits que indican el TIPO de fichero (regular, dir, enlace...)
-- c) Convierte el modo a octal
-- d) Comprueba si el fichero es ejecutable
-- e) Da el tamaño del fichero
+- [ ] a) Extrae los bits de PERMISOS del fichero
+- [ ] b) Extrae los bits que indican el TIPO de fichero (regular, dir, enlace...)
+- [ ] c) Convierte el modo a octal
+- [ ] d) Comprueba si el fichero es ejecutable
+- [ ] e) Da el tamaño del fichero
 
 ### Pregunta 18
 `readdir` en `myls` devolvera, entre otras, las entradas:
-- a) Solo ficheros regulares
-- b) Solo subdirectorios
-- c) Todas las entradas, incluidas `.` y `..`
-- d) Solo ficheros ocultos
-- e) Solo enlaces simbolicos
+- [ ] a) Solo ficheros regulares
+- [ ] b) Solo subdirectorios
+- [ ] c) Todas las entradas, incluidas `.` y `..`
+- [ ] d) Solo ficheros ocultos
+- [ ] e) Solo enlaces simbolicos
 
 ---
 
@@ -195,20 +195,20 @@ La funcion `what_type` hace `switch (mode & S_IFMT)`. Para que sirve `& S_IFMT`?
 ### Pregunta 19
 `maxtab` detecta lineas demasiado largas con
 `if (strchr(linea, '\n') == NULL && !feof(f))`. Que situacion detecta?
-- a) Que la linea esta vacia
-- b) Que `fgets` lleno el buffer sin encontrar `\n` (la linea no cabe entera)
-- c) Que el fichero no existe
-- d) Que hay tabuladores
-- e) Que se llego al final del fichero
+- [ ] a) Que la linea esta vacia
+- [ ] b) Que `fgets` lleno el buffer sin encontrar `\n` (la linea no cabe entera)
+- [ ] c) Que el fichero no existe
+- [ ] d) Que hay tabuladores
+- [ ] e) Que se llego al final del fichero
 
 ### Pregunta 20
 Para quedarse con la mejor linea, `maxtab` usa `strdup(linea)` y libera la anterior con
 `free(*max_linea)`. Por que `strdup` y no guardar el puntero `linea` directamente?
-- a) Porque `linea` es un buffer reutilizado en cada `fgets`; hay que COPIAR su contenido
-- b) Porque `strdup` es mas rapido que `=`
-- c) Porque `linea` es de solo lectura
-- d) Porque `free` necesita memoria estatica
-- e) No hace falta, es codigo redundante
+- [ ] a) Porque `linea` es un buffer reutilizado en cada `fgets`; hay que COPIAR su contenido
+- [ ] b) Porque `strdup` es mas rapido que `=`
+- [ ] c) Porque `linea` es de solo lectura
+- [ ] d) Porque `free` necesita memoria estatica
+- [ ] e) No hace falta, es codigo redundante
 
 ---
 
@@ -217,28 +217,28 @@ Para quedarse con la mejor linea, `maxtab` usa `strdup(linea)` y libera la anter
 ### Pregunta 21
 En `pipes.c`/`pspid.c`, despues de crear los dos hijos, el PADRE hace `close(fd[0])` y
 `close(fd[1])`. Que pasaria si NO cerrara el extremo de escritura `fd[1]`?
-- a) Nada, funciona igual
-- b) El proceso `wc -l` (lector) nunca recibiria EOF y se quedaria bloqueado
-- c) `ps` fallaria
-- d) Se duplicaria la salida
-- e) Recibiria SIGPIPE
+- [ ] a) Nada, funciona igual
+- [ ] b) El proceso `wc -l` (lector) nunca recibiria EOF y se quedaria bloqueado
+- [ ] c) `ps` fallaria
+- [ ] d) Se duplicaria la salida
+- [ ] e) Recibiria SIGPIPE
 
 ### Pregunta 22
 El primer hijo hace `dup2(fd[1], STDOUT_FILENO)` y luego `execlp("ps", ...)`. Que consigue?
-- a) Que `ps` lea del pipe
-- b) Que la salida estandar de `ps` vaya al pipe en vez de a la pantalla
-- c) Que `ps` escriba en un fichero
-- d) Que `ps` ignore el pipe
-- e) Que el padre reciba la salida directamente
+- [ ] a) Que `ps` lea del pipe
+- [ ] b) Que la salida estandar de `ps` vaya al pipe en vez de a la pantalla
+- [ ] c) Que `ps` escriba en un fichero
+- [ ] d) Que `ps` ignore el pipe
+- [ ] e) Que el padre reciba la salida directamente
 
 ### Pregunta 23
 El segundo hijo hace `dup2(fd[0], STDIN_FILENO)` antes de `execlp("wc", "wc", "-l", ...)`.
 Resultado del conjunto:
-- a) Cuenta las lineas de la salida de `ps` (equivale a `ps | wc -l`)
-- b) Cuenta los caracteres del teclado
-- c) Escribe el numero de procesos en un fichero
-- d) Lista los procesos sin contarlos
-- e) Da error porque falta un tercer proceso
+- [ ] a) Cuenta las lineas de la salida de `ps` (equivale a `ps | wc -l`)
+- [ ] b) Cuenta los caracteres del teclado
+- [ ] c) Escribe el numero de procesos en un fichero
+- [ ] d) Lista los procesos sin contarlos
+- [ ] e) Da error porque falta un tercer proceso
 
 ---
 
@@ -248,21 +248,21 @@ Resultado del conjunto:
 `waitfiles.sh` define `queda_algo()` que recorre los ficheros y hace `return 0` en cuanto
 encuentra uno que aun existe. El bucle principal es `while queda_algo "$@"; do sleep 1; done`.
 Que hace el script?
-- a) Borra los ficheros pasados
-- b) Espera (sondeando cada segundo) hasta que TODOS los ficheros indicados hayan desaparecido, luego imprime `done`
-- c) Crea los ficheros que faltan
-- d) Cuenta cuantos ficheros hay
-- e) Espera a que aparezca el primer fichero
+- [ ] a) Borra los ficheros pasados
+- [ ] b) Espera (sondeando cada segundo) hasta que TODOS los ficheros indicados hayan desaparecido, luego imprime `done`
+- [ ] c) Crea los ficheros que faltan
+- [ ] d) Cuenta cuantos ficheros hay
+- [ ] e) Espera a que aparezca el primer fichero
 
 ### Pregunta 25
 En `catlen.sh`, para cada `.txt` se calcula
 `longitud=$(printf "%s\n" "$fichero" | wc -c); longitud=$((longitud-1))` y luego
 `cat "$fichero" >> "$longitud.output"`. Por que se RESTA 1 a `wc -c`?
-- a) Porque `wc -c` cuenta tambien el `\n` que añade `printf`, y no forma parte del nombre
-- b) Porque los nombres empiezan en 0
-- c) Para dejar sitio al `.output`
-- d) Porque `wc -c` cuenta de mas por un bug
-- e) No deberia restarse, es un error
+- [ ] a) Porque `wc -c` cuenta tambien el `\n` que añade `printf`, y no forma parte del nombre
+- [ ] b) Porque los nombres empiezan en 0
+- [ ] c) Para dejar sitio al `.output`
+- [ ] d) Porque `wc -c` cuenta de mas por un bug
+- [ ] e) No deberia restarse, es un error
 
 ---
 

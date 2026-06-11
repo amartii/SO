@@ -19,21 +19,21 @@ a = b++;
 printf("%d %d\n", a, b);
 ```
 Que imprime?
-- a) 2 3
-- b) 1 2
-- c) 4 5
-- d) 2 2
-- e) 3 4
+- [ ] a) 2 3
+- [ ] b) 1 2
+- [ ] c) 4 5
+- [ ] d) 2 2
+- [ ] e) 3 4
 
 ---
 
 ### Pregunta 2
 Que hace el operador `->` en C?
-- a) Suma 1 a un puntero
-- b) Atraviesa un puntero y accede al campo de un registro (struct)
-- c) Accede al indice de un array a traves de un puntero
-- d) Solo funciona sobre punteros a entero
-- e) Es lo mismo que el operador `&`
+- [ ] a) Suma 1 a un puntero
+- [ ] b) Atraviesa un puntero y accede al campo de un registro (struct)
+- [ ] c) Accede al indice de un array a traves de un puntero
+- [ ] d) Solo funciona sobre punteros a entero
+- [ ] e) Es lo mismo que el operador `&`
 
 ---
 
@@ -48,11 +48,11 @@ for (i = 0; i < 100; i++)
     s[i] = 'c';
 ```
 Sobre esta reserva:
-- a) Es exacta: reserva justo 100 bytes
-- b) Compila y puede ejecutar, pero reserva mas memoria de la necesaria
-- c) Error de tipos en el cast
-- d) No compila
-- e) Provoca SIGSEGV en el bucle
+- [ ] a) Es exacta: reserva justo 100 bytes
+- [ ] b) Compila y puede ejecutar, pero reserva mas memoria de la necesaria
+- [ ] c) Error de tipos en el cast
+- [ ] d) No compila
+- [ ] e) Provoca SIGSEGV en el bucle
 
 ---
 
@@ -63,11 +63,11 @@ for (i = 0; i < 3; i++)
 fprintf(stderr, "hola\n");
 ```
 Cuantas lineas "hola" se escriben y por que salida?
-- a) 3, por stdout
-- b) 3, por stderr
-- c) 8, por stderr
-- d) 8, por stdout
-- e) 4, por stderr
+- [ ] a) 3, por stdout
+- [ ] b) 3, por stderr
+- [ ] c) 8, por stderr
+- [ ] d) 8, por stdout
+- [ ] e) 4, por stderr
 
 ---
 
@@ -80,62 +80,62 @@ void f(void) {
 }
 ```
 Que se puede afirmar de los 4 numeros impresos?
-- a) Siempre los 4 distintos
-- b) Siempre los 4 iguales
-- c) Siempre dos iguales y dos distintos (hermanos comparten padre)
-- d) Siempre en el mismo orden
-- e) Solo imprime 3 numeros
+- [ ] a) Siempre los 4 distintos
+- [ ] b) Siempre los 4 iguales
+- [ ] c) Siempre dos iguales y dos distintos (hermanos comparten padre)
+- [ ] d) Siempre en el mismo orden
+- [ ] e) Solo imprime 3 numeros
 
 ---
 
 ### Pregunta 6
 La señal SIGKILL (9):
-- a) Mata el proceso pero se puede ignorar con signal()
-- b) Es la que envia Ctrl+C
-- c) No se puede capturar ni ignorar, y no es Ctrl+C
-- d) Solo detiene temporalmente el proceso
-- e) Equivale a Ctrl+Z
+- [ ] a) Mata el proceso pero se puede ignorar con signal()
+- [ ] b) Es la que envia Ctrl+C
+- [ ] c) No se puede capturar ni ignorar, y no es Ctrl+C
+- [ ] d) Solo detiene temporalmente el proceso
+- [ ] e) Equivale a Ctrl+Z
 
 ---
 
 ### Pregunta 7
 La mascara de señales de un proceso indica:
-- a) Las señales que el proceso ignora
-- b) Los manejadores instalados
-- c) Las señales que tiene bloqueadas (quedan pendientes)
-- d) La tabla de descriptores de fichero
-- e) Las señales ya entregadas
+- [ ] a) Las señales que el proceso ignora
+- [ ] b) Los manejadores instalados
+- [ ] c) Las señales que tiene bloqueadas (quedan pendientes)
+- [ ] d) La tabla de descriptores de fichero
+- [ ] e) Las señales ya entregadas
 
 ---
 
 ### Pregunta 8
 Al escribir con write en un pipe cuyo extremo de lectura NO tiene ningun proceso abierto:
-- a) write devuelve 0
-- b) El proceso recibe SIGPIPE
-- c) Se bloquea para siempre
-- d) Los datos se escriben igualmente
-- e) write devuelve los bytes pero se pierden
+- [ ] a) write devuelve 0
+- [ ] b) El proceso recibe SIGPIPE
+- [ ] c) Se bloquea para siempre
+- [ ] d) Los datos se escriben igualmente
+- [ ] e) write devuelve los bytes pero se pierden
 
 ---
 
 ### Pregunta 9
 En un planificador Round-Robin, si aumentamos mucho el cuanto:
-- a) Se beneficia a los procesos interactivos
-- b) Degenera en FCFS y puede provocar efecto convoy
-- c) Degenera en SJF y provoca hambruna
-- d) Round-Robin no usa cuanto
-- e) Aumentan los cambios de contexto
+- [ ] a) Se beneficia a los procesos interactivos
+- [ ] b) Degenera en FCFS y puede provocar efecto convoy
+- [ ] c) Degenera en SJF y provoca hambruna
+- [ ] d) Round-Robin no usa cuanto
+- [ ] e) Aumentan los cambios de contexto
 
 ---
 
 ### Pregunta 10
 Si una modificacion encarece (hace mas lento) cada cambio de contexto, la politica mas
 perjudicada es:
-- a) FCFS
-- b) SJF
-- c) Round-Robin con cuanto grande
-- d) Round-Robin con cuanto pequeño
-- e) Afecta por igual a todas
+- [ ] a) FCFS
+- [ ] b) SJF
+- [ ] c) Round-Robin con cuanto grande
+- [ ] d) Round-Robin con cuanto pequeño
+- [ ] e) Afecta por igual a todas
 
 ---
 
@@ -152,71 +152,71 @@ int eliminar(Cliente *c) {
 }
 ```
 Que problema tiene?
-- a) Ninguno, es correcto
-- b) Deadlock
-- c) Condicion de carrera: existe() esta fuera del lock
-- d) Falta inicializar el mutex
-- e) No compila
+- [ ] a) Ninguno, es correcto
+- [ ] b) Deadlock
+- [ ] c) Condicion de carrera: existe() esta fuera del lock
+- [ ] d) Falta inicializar el mutex
+- [ ] e) No compila
 
 ---
 
 ### Pregunta 12
 La llamada `mlock()`:
-- a) Sincroniza acceso a variables compartidas
-- b) Evita que la memoria de un proceso vaya a swap
-- c) Bloquea ficheros (lectores/escritores)
-- d) Bloquea señales
-- e) No existe
+- [ ] a) Sincroniza acceso a variables compartidas
+- [ ] b) Evita que la memoria de un proceso vaya a swap
+- [ ] c) Bloquea ficheros (lectores/escritores)
+- [ ] d) Bloquea señales
+- [ ] e) No existe
 
 ---
 
 ### Pregunta 13
 `flock()` sirve para:
-- a) Sincronizar variables en memoria
-- b) Bloqueo de lectores/escritores sobre FICHEROS
-- c) Evitar el swap
-- d) Hacer escrituras en modo append
-- e) Vaciar el buffer
+- [ ] a) Sincronizar variables en memoria
+- [ ] b) Bloqueo de lectores/escritores sobre FICHEROS
+- [ ] c) Evitar el swap
+- [ ] d) Hacer escrituras en modo append
+- [ ] e) Vaciar el buffer
 
 ---
 
 ### Pregunta 14
 La seccion `.text` de un ELF contiene:
-- a) Datos inicializados
-- b) Datos no inicializados
-- c) Las instrucciones (codigo maquina)
-- d) La GOT y la PLT
-- e) La tabla de simbolos
+- [ ] a) Datos inicializados
+- [ ] b) Datos no inicializados
+- [ ] c) Las instrucciones (codigo maquina)
+- [ ] d) La GOT y la PLT
+- [ ] e) La tabla de simbolos
 
 ---
 
 ### Pregunta 15
 Marca la opcion INCORRECTA. Un fichero ELF contiene informacion sobre:
-- a) El punto de entrada del programa
-- b) La arquitectura objetivo
-- c) El tipo de planificador que usara el kernel
-- d) El enlazado
-- e) Los datos inicializados
+- [ ] a) El punto de entrada del programa
+- [ ] b) La arquitectura objetivo
+- [ ] c) El tipo de planificador que usara el kernel
+- [ ] d) El enlazado
+- [ ] e) Los datos inicializados
 
 ---
 
 ### Pregunta 16
 Con lazy binding, la direccion de una funcion de biblioteca se resuelve:
-- a) Al compilar
-- b) Al enlazar con gcc
-- c) En la primera llamada a esa funcion
-- d) Al inicio del programa (antes de main)
-- e) Al terminar el programa
+- [ ] a) Al compilar
+- [ ] b) Al enlazar con gcc
+- [ ] c) En la primera llamada a esa funcion
+- [ ] d) Al inicio del programa (antes de main)
+- [ ] e) Al terminar el programa
 
 ---
 
 ### Pregunta 17
 En un sistema de ficheros estilo Unix con i-nodos, la asignacion de bloques es:
-- a) Contigua
-- b) Lista enlazada simple
-- c) Lista enlazada con tabla (estilo FAT)
-- d) Indexada con esquema combinado (directos + indirectos)
-- e) Indexada de exactamente 4 niveles siempre
+- [ ] a) Contigua
+- [ ] b) Lista enlazada simple
+- [ ] c) Lista enlazada con tabla (estilo FAT)
+- [ ] d) Indexada con esquema combinado (directos + indirectos)
+- [ ] e) Indexada de exactamente 4 niveles siempre
 
 ---
 

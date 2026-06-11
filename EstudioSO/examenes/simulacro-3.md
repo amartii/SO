@@ -23,11 +23,11 @@ int main(int argc, char *argv[]) {
 }
 ```
 Que imprime?
-- a) 0123
-- b) 023
-- c) 0234
-- d) 01234
-- e) 02
+- [ ] a) 0123
+- [ ] b) 023
+- [ ] c) 0234
+- [ ] d) 01234
+- [ ] e) 02
 
 ---
 
@@ -43,11 +43,11 @@ p = &(p[2]);
 printf("%d\n", *p);
 ```
 Que imprime?
-- a) 30
-- b) 50
-- c) 60
-- d) Un valor indeterminado
-- e) No compila
+- [ ] a) 30
+- [ ] b) 50
+- [ ] c) 60
+- [ ] d) Un valor indeterminado
+- [ ] e) No compila
 
 ---
 
@@ -59,11 +59,11 @@ p[3] = 0;
 printf("%zu\n", strlen(p));
 ```
 Que imprime?
-- a) 5
-- b) 4
-- c) 3
-- d) 6
-- e) No compila
+- [ ] a) 5
+- [ ] b) 4
+- [ ] c) 3
+- [ ] d) 6
+- [ ] e) No compila
 
 ---
 
@@ -77,11 +77,11 @@ char *crear(void) {
 int main(void) { printf("%s\n", crear()); }
 ```
 Que ocurre?
-- a) Imprime "dato" siempre
-- b) Comportamiento indefinido: se devuelve un puntero a variable local
-- c) Error de compilacion seguro
-- d) Fuga de memoria pero imprime bien
-- e) Segmentation fault garantizado en todas las maquinas
+- [ ] a) Imprime "dato" siempre
+- [ ] b) Comportamiento indefinido: se devuelve un puntero a variable local
+- [ ] c) Error de compilacion seguro
+- [ ] d) Fuga de memoria pero imprime bien
+- [ ] e) Segmentation fault garantizado en todas las maquinas
 
 ---
 
@@ -94,11 +94,11 @@ if (v == NULL)
 memset(v, 0, sizeof(v));
 ```
 Cuantos bytes inicializa el memset?
-- a) 50
-- b) 200
-- c) 8 (en 64 bits)
-- d) 50 * sizeof(int)
-- e) 0, el memset no hace nada
+- [ ] a) 50
+- [ ] b) 200
+- [ ] c) 8 (en 64 bits)
+- [ ] d) 50 * sizeof(int)
+- [ ] e) 0, el memset no hace nada
 
 ---
 
@@ -117,11 +117,11 @@ int main(void) {
 }
 ```
 Cual es el problema principal?
-- a) Es totalmente correcto
-- b) Segmentation fault seguro
-- c) Funciona, pero hay una fuga de memoria (la de new_punto)
-- d) Doble free
-- e) No compila
+- [ ] a) Es totalmente correcto
+- [ ] b) Segmentation fault seguro
+- [ ] c) Funciona, pero hay una fuga de memoria (la de new_punto)
+- [ ] d) Doble free
+- [ ] e) No compila
 
 ---
 
@@ -134,11 +134,11 @@ fork();
 printf("Y");
 ```
 Cuantas X y cuantas Y se imprimen (suponiendo stdout con buffer)?
-- a) 1 X y 3 Y
-- b) 1 X y 8 Y
-- c) 8 X y 8 Y
-- d) 1 X y 4 Y
-- e) 4 X y 8 Y
+- [ ] a) 1 X y 3 Y
+- [ ] b) 1 X y 8 Y
+- [ ] c) 8 X y 8 Y
+- [ ] d) 1 X y 4 Y
+- [ ] e) 4 X y 8 Y
 
 ---
 
@@ -154,11 +154,11 @@ if (fork() == 0) {
 }
 ```
 Sobre el orden de las dos lineas:
-- a) Imprime las dos pero el orden no esta garantizado
-- b) Siempre imprime "hijo" antes que "padre"
-- c) Siempre imprime "padre" antes que "hijo"
-- d) Solo imprime "padre"
-- e) Solo imprime "hijo"
+- [ ] a) Imprime las dos pero el orden no esta garantizado
+- [ ] b) Siempre imprime "hijo" antes que "padre"
+- [ ] c) Siempre imprime "padre" antes que "hijo"
+- [ ] d) Solo imprime "padre"
+- [ ] e) Solo imprime "hijo"
 
 ---
 
@@ -170,11 +170,11 @@ if (res < 0)
 printf("exec ok\n");
 ```
 Que ocurre con "exec ok"?
-- a) Siempre se imprime
-- b) Nunca se imprime
-- c) Se imprime solo si exec tiene exito
-- d) Se imprime una vez por cada argumento
-- e) El codigo no compila
+- [ ] a) Siempre se imprime
+- [ ] b) Nunca se imprime
+- [ ] c) Se imprime solo si exec tiene exito
+- [ ] d) Se imprime una vez por cada argumento
+- [ ] e) El codigo no compila
 
 ---
 
@@ -185,11 +185,11 @@ if (nw < 0)
     err(1, "write");
 ```
 Sobre la comprobacion de error:
-- a) Es perfecta, write siempre devuelve N o -1
-- b) write puede devolver menos de N sin ser error; deberia tratarse ese caso
-- c) La condicion deberia ser nw <= 0
-- d) write nunca devuelve negativo
-- e) Falta llamar a fork antes
+- [ ] a) Es perfecta, write siempre devuelve N o -1
+- [ ] b) write puede devolver menos de N sin ser error; deberia tratarse ese caso
+- [ ] c) La condicion deberia ser nw <= 0
+- [ ] d) write nunca devuelve negativo
+- [ ] e) Falta llamar a fork antes
 
 ---
 
@@ -202,11 +202,11 @@ close(x);
 execlp("wc", "wc", "-l", NULL);
 ```
 Que hace si /tmp/datos existe?
-- a) Lee del teclado y cuenta lineas
-- b) Escribe en /tmp/datos el numero de lineas
-- c) Escribe por stdout el numero de lineas de /tmp/datos
-- d) Falla porque deberia ser execv
-- e) Segmentation fault
+- [ ] a) Lee del teclado y cuenta lineas
+- [ ] b) Escribe en /tmp/datos el numero de lineas
+- [ ] c) Escribe por stdout el numero de lineas de /tmp/datos
+- [ ] d) Falla porque deberia ser execv
+- [ ] e) Segmentation fault
 
 ---
 
@@ -217,11 +217,11 @@ fprintf(f, "abc\n");
 for (;;) { }
 ```
 Que contiene /tmp/y mientras el bucle gira?
-- a) "abc\n" (4 bytes)
-- b) "abc" (3 bytes)
-- c) Probablemente nada (sigue en el buffer)
-- d) Error: no se puede abrir
-- e) Basura
+- [ ] a) "abc\n" (4 bytes)
+- [ ] b) "abc" (3 bytes)
+- [ ] c) Probablemente nada (sigue en el buffer)
+- [ ] d) Error: no se puede abrir
+- [ ] e) Basura
 
 ---
 
@@ -233,11 +233,11 @@ $ ln /tmp/a /tmp/b
 $ rm /tmp/a
 ```
 Tras el ultimo `rm`, el i-nodo original:
-- a) Se borro, ya no existe
-- b) Sigue existiendo con st_nlink = 2
-- c) Sigue existiendo con st_nlink = 1 (a traves de /tmp/b)
-- d) Queda como enlace simbolico roto
-- e) Se borra el contenido pero queda el nombre
+- [ ] a) Se borro, ya no existe
+- [ ] b) Sigue existiendo con st_nlink = 2
+- [ ] c) Sigue existiendo con st_nlink = 1 (a traves de /tmp/b)
+- [ ] d) Queda como enlace simbolico roto
+- [ ] e) Se borra el contenido pero queda el nombre
 
 ---
 
@@ -250,11 +250,11 @@ write(fd[1], b, sizeof(b));
 read(fd[0], b, sizeof(b));
 ```
 Que ocurre (un solo proceso)?
-- a) Funciona perfectamente
-- b) SIGPIPE
-- c) Se bloquea para siempre (deadlock)
-- d) read devuelve 0
-- e) Segmentation fault
+- [ ] a) Funciona perfectamente
+- [ ] b) SIGPIPE
+- [ ] c) Se bloquea para siempre (deadlock)
+- [ ] d) read devuelve 0
+- [ ] e) Segmentation fault
 
 ---
 
@@ -265,22 +265,22 @@ $ sh
 $ echo "$var"
 ```
 Que imprime el ultimo echo?
-- a) hola
-- b) Una linea vacia (la variable no se exporto)
-- c) $var
-- d) Error de sintaxis
-- e) El PID del shell
+- [ ] a) hola
+- [ ] b) Una linea vacia (la variable no se exporto)
+- [ ] c) $var
+- [ ] d) Error de sintaxis
+- [ ] e) El PID del shell
 
 ---
 
 ### Pregunta 16
 Con paginacion bajo demanda (overcommit), un global `char a[8*1024*1024]` del que solo
 se escribe `a[0]`. Cuantos marcos de pagina usa para ese dato?
-- a) 2048
-- b) 1
-- c) 0
-- d) 8388608
-- e) 512
+- [ ] a) 2048
+- [ ] b) 1
+- [ ] c) 0
+- [ ] d) 8388608
+- [ ] e) 512
 
 ---
 
@@ -295,11 +295,11 @@ void incr(void) {
 }
 ```
 Varios hilos ejecutan incr(). Que afirmacion es cierta?
-- a) Es correcto, x nunca supera MAX
-- b) Hay condicion de carrera: x puede acabar mayor que MAX
-- c) Hay un deadlock
-- d) No compila por falta de init
-- e) El lock sobra, x++ ya es atomico
+- [ ] a) Es correcto, x nunca supera MAX
+- [ ] b) Hay condicion de carrera: x puede acabar mayor que MAX
+- [ ] c) Hay un deadlock
+- [ ] d) No compila por falta de init
+- [ ] e) El lock sobra, x++ ya es atomico
 
 ---
 
