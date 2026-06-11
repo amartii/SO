@@ -50,10 +50,20 @@ EstudioSO/
       (soluciones .c y .sh de todos los ejercicios)
   examenes/
     preguntas-tema-por-tema.md
-    simulacro-1.md
-    simulacro-2.md
-    errores-comunes.md
+    ejercicios-practicos-c.md       <- ejercicios de PROGRAMAR en C, con solucion
+    ejercicios-practicos-shell.md   <- ejercicios de PROGRAMAR scripts, con solucion
+    simulacro-1.md                  <- tipo test (4 opciones)
+    simulacro-2.md                  <- tipo test (4 opciones)
+    simulacro-3.md                  <- tipo test (5 opciones a-e, formato examen real)
+    simulacro-4.md                  <- tipo test (5 opciones a-e, segunda mitad del temario)
+    simulacro-5-practico.md         <- examen PRACTICO: programar C + shell, con solucion
+    preguntas-practicas-ejs.md      <- test sobre las practicas de clase/ejs (25 preguntas)
+    errores-comunes.md              <- incluye el RESUMACO de trampas de examen
 ```
+
+> Los simulacros 3 y 4 usan **5 opciones (a-e)**, igual que los examenes reales (TEST1) del
+> banco de preguntas en `clase/apuntes/` (Popurri de examenes). El simulacro 5 reproduce la
+> parte de PROGRAMAR de la asignatura (estilo de las practicas: mycopy, searchstr, pipe).
 
 ## Compilar los ejercicios de C
 

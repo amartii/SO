@@ -1,0 +1,1259 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>apuntes_shellscript</title>
+<style>body{font-family:Arial,Helvetica,sans-serif;line-height:1.45;margin:40px;color:#111} h1,h2,h3{font-family:Georgia,serif} pre{white-space:pre-wrap;background:#f5f5f5;padding:12px;border-radius:8px;border:1px solid #ddd;overflow-wrap:anywhere} code{font-family:Consolas,monospace} ul,ol{margin-top:0} .pagebreak{page-break-after:always}</style>
+</head><body>
+<h1>TEMA 9: SHELL SCRIPTING EN #!/bin/sh</h1>
+<p></p>
+<p>**Basado en:** Tema 9 (diapositivas) y &quot;Fundamentos de sistemas operativos: una aproximación práctica usando Linux&quot;</p>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>PARTE I: CONCEPTOS FUNDAMENTALES</h2>
+<p></p>
+<h3>1. ¿QUÉ ES UN SCRIPT DE SHELL?</h3>
+<p></p>
+<p>Un **script de shell** es un fichero de texto que contiene una serie de comandos que la shell ejecuta secuencialmente.</p>
+<p></p>
+<p>**Estructura mínima:**</p>
+<pre><code>
+#!/bin/sh
+# Comentario: esto no se ejecuta
+echo &quot;Hola mundo&quot;
+exit 0
+</code></pre>
+<p></p>
+<p>**Requisitos:**</p>
+<ul><li>Primera línea: `#!/bin/sh` (shebang) - indica qué intérprete usar.</li></ul>
+<ul><li>Permisos de ejecución: `chmod +x script.sh`</li></ul>
+<ul><li>Si no termina con `exit`, el script devuelve el status del último comando ejecutado.</li></ul>
+<p></p>
+<p>**Política POSIX:** Los scripts con `#!/bin/sh` deben usar **solo características POSIX** (IEEE Std 1003.1-2017) para ser **portables** entre sistemas.</p>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>PARTE II: PARÁMETROS POSICIONALES</h2>
+<p></p>
+<h3>2. ACCESO A ARGUMENTOS</h3>
+<p></p>
+<p>La shell proporciona variables especiales para acceder a los argumentos pasados al script:</p>
+<p></p>
+<p>| Variable | Significado |</p>
+<p>|----------|-------------|</p>
+<p>| `$0` | Nombre con el que se invocó el script |</p>
+<p>| `$1`, `$2`, `$3`, ... | Argumentos posicionales (primero, segundo, tercero, ...) |</p>
+<p>| `$#` | Número de argumentos (sin contar `$0`) |</p>
+<p>| `$*` | Todos los argumentos como una única cadena: `&quot;$1 $2 $3...&quot;` |</p>
+<p>| `$@` | Todos los argumentos separados: `&quot;$1&quot; &quot;$2&quot; &quot;$3&quot;...` |</p>
+<p></p>
+<p>**Ejemplo: `prueba_params.sh`**</p>
+<pre><code>
+#!/bin/sh
+echo &quot;Nombre del script: $0&quot;
+echo &quot;Número de parámetros: $#&quot;
+echo &quot;Todos juntos (\$*): $*&quot;
+echo &quot;---&quot;
+
+for arg in &quot;$@&quot;
+do
+    echo &quot;  Argumento: $arg&quot;
+done
+
+exit 0
+</code></pre>
+<p></p>
+<p>**Cómo probarlo:**</p>
+<pre><code>
+chmod +x prueba_params.sh
+./prueba_params.sh uno dos &quot;tres cuatro&quot;
+</code></pre>
+<p></p>
+<p>**Salida esperada:**</p>
+<pre><code>
+Nombre del script: ./prueba_params.sh
+Número de parámetros: 3
+Todos juntos ($*): uno dos tres cuatro
+---
+  Argumento: uno
+  Argumento: dos
+  Argumento: tres cuatro
+</code></pre>
+<p></p>
+<p>**Diferencia importante entre `&quot;$*&quot;` y `&quot;$@&quot;`:**</p>
+<pre><code>
+#!/bin/sh
+# Con &quot;$*&quot;: argumentos se tratan como una única palabra
+for x in &quot;$*&quot;
+do
+    echo &quot;palabra: $x&quot;
+done
+
+# Con &quot;$@&quot;: cada argumento es una palabra separada
+for x in &quot;$@&quot;
+do
+    echo &quot;palabra: $x&quot;
+done
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h3>3. COMANDO SHIFT</h3>
+<p></p>
+<p>`shift` desplaza los argumentos posicionales: `$2` pasa a ser `$1`, `$3` pasa a ser `$2`, etc. Se actualiza `$#`.</p>
+<p></p>
+<p>**Uso común:** Procesar argumentos optativos sin complicar el resto del código.</p>
+<p></p>
+<p>**Ejemplo: `prueba_shift.sh`**</p>
+<pre><code>
+#!/bin/sh
+echo &quot;Antes de shift: $# argumentos -&gt; $@&quot;
+
+shift
+echo &quot;Después de 1 shift: $# argumentos -&gt; $@&quot;
+
+shift 2
+echo &quot;Después de 2 shifts más: $# argumentos -&gt; $@&quot;
+
+exit 0
+</code></pre>
+<p></p>
+<p>**Cómo probarlo:**</p>
+<pre><code>
+./prueba_shift.sh a b c d e
+</code></pre>
+<p></p>
+<p>**Salida esperada:**</p>
+<pre><code>
+Antes de shift: 5 argumentos -&gt; a b c d e
+Después de 1 shift: 4 argumentos -&gt; b c d e
+Después de 2 shifts más: 2 argumentos -&gt; d e
+</code></pre>
+<p></p>
+<p>**Patrón típico de parámetro optativo:**</p>
+<pre><code>
+#!/bin/sh
+debug=false
+
+if test $# -gt 0 -a &quot;$1&quot; = &quot;-d&quot;
+then
+    debug=true
+    shift  # Eliminamos -d de los argumentos
+fi
+
+# Ahora el resto del código solo trabaja con argumentos sin opciones
+echo &quot;debug = $debug&quot;
+echo &quot;Otros argumentos: $@&quot;
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>PARTE III: AGRUPACIONES DE COMANDOS</h2>
+<p></p>
+<h3>4. AGRUPACIONES EN SUBSHELL Y EN LA SHELL ACTUAL</h3>
+<p></p>
+<p>Podemos agrupar comandos para ejecutarlos como una unidad.</p>
+<p></p>
+<p>#### 4.1 Agrupación en **subshell** `( ... )`</p>
+<p></p>
+<p>Crea un nuevo proceso hijo. Los cambios de entorno (cd, export) no afectan a la shell padre.</p>
+<p></p>
+<pre><code>
+#!/bin/sh
+pwd
+( cd /tmp &amp;&amp; ls &amp;&amp; pwd )  # Se ejecuta en subshell
+pwd  # Seguimos en el directorio original
+</code></pre>
+<p></p>
+<p>#### 4.2 Agrupación en la **misma shell** `{ ... }`</p>
+<p></p>
+<p>Se ejecuta en el contexto de la shell actual. Los cambios de entorno SÍ afectan.</p>
+<p></p>
+<pre><code>
+#!/bin/sh
+pwd
+{ cd /tmp; ls; pwd; }  # Se ejecuta en la misma shell
+pwd  # Ahora estamos en /tmp (cambio persiste)
+</code></pre>
+<p></p>
+<p>**Ejemplo completo: `prueba_agrupaciones.sh`**</p>
+<pre><code>
+#!/bin/sh
+
+echo &quot;=== SUBSHELL ===&quot;
+echo &quot;Antes (pwd): $(pwd)&quot;
+(
+    cd /tmp
+    echo &quot;Dentro subshell (pwd): $(pwd)&quot;
+)
+echo &quot;Después (pwd): $(pwd)&quot;
+
+echo &quot;&quot;
+echo &quot;=== MISMA SHELL ===&quot;
+echo &quot;Antes (pwd): $(pwd)&quot;
+{
+    cd /tmp
+    echo &quot;Dentro mismo shell (pwd): $(pwd)&quot;
+}
+echo &quot;Después (pwd): $(pwd)&quot;
+
+exit 0
+</code></pre>
+<p></p>
+<p>**Redirecciones con agrupaciones:**</p>
+<pre><code>
+# Redirigir la salida de múltiples comandos
+{ echo &quot;línea 1&quot;; echo &quot;línea 2&quot;; } &gt; fichero.txt
+
+# Procesar con filtros
+{ cat a.txt; cat b.txt; } | sort | uniq
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>PARTE IV: SUSTITUCIÓN DE COMANDOS</h2>
+<p></p>
+<h3>5. SUSTITUCIÓN: EJECUTAR COMANDOS Y USAR SU SALIDA</h3>
+<p></p>
+<p>Dos formas equivalentes:</p>
+<p></p>
+<pre><code>
+variable=$(comando)   # Forma moderna (recomendada)
+variable=`comando`    # Forma antigua (backticks)
+</code></pre>
+<p></p>
+<p>**Ejemplo: `prueba_substitucion.sh`**</p>
+<pre><code>
+#!/bin/sh
+
+# Guardar número de líneas de un fichero
+lineas=$(wc -l &lt; /etc/passwd)
+echo &quot;El archivo /etc/passwd tiene $lineas líneas&quot;
+
+# Usar sustitución en un argumento
+echo &quot;Contenido de /tmp:&quot;
+ls /tmp | wc -l
+archivos=$(ls /tmp | wc -l)
+echo &quot;Total: $archivos ficheros en /tmp&quot;
+
+# Sustitución anidada
+primero=$(echo &quot;hola mundo&quot; | cut -d&#x27; &#x27; -f1)
+echo &quot;Primera palabra: $primero&quot;
+
+exit 0
+</code></pre>
+<p></p>
+<p>**Prueba:**</p>
+<pre><code>
+./prueba_substitucion.sh
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>PARTE V: CONTROL DE FLUJO: if, elif, else, fi</h2>
+<p></p>
+<h3>6. SENTENCIAS CONDICIONALES IF</h3>
+<p></p>
+<p>Las condiciones se basan en el **estado de salida de un comando**:</p>
+<ul><li>Estado `0` = éxito = verdadero</li></ul>
+<ul><li>Estado ≠ `0` = fallo = falso</li></ul>
+<p></p>
+<pre><code>
+if comando
+then
+    comandos_si_éxito
+elif comando
+then
+    comandos_si_éxito_segunda_condición
+else
+    comandos_si_fallo
+fi
+</code></pre>
+<p></p>
+<p>**Ejemplo simple: `prueba_if.sh`**</p>
+<pre><code>
+#!/bin/sh
+
+fichero=&quot;/etc/hostname&quot;
+
+if test -f &quot;$fichero&quot;
+then
+    echo &quot;El fichero $fichero existe&quot;
+    cat &quot;$fichero&quot;
+else
+    echo &quot;El fichero $fichero no existe&quot;
+fi
+
+exit 0
+</code></pre>
+<p></p>
+<p>**Negar condiciones con `!`:**</p>
+<pre><code>
+if ! grep -q &quot;usuario&quot; /etc/passwd
+then
+    echo &quot;El usuario no existe&quot;
+fi
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h3>7. COMANDO TEST Y OPERADORES</h3>
+<p></p>
+<p>`test` (o `[ ... ]`) comprueba condiciones:</p>
+<p></p>
+<p>#### **Pruebas de ficheros:**</p>
+<pre><code>
+test -f fichero    # ¿Existe y es fichero regular?
+test -d directorio # ¿Existe y es directorio?
+test -e ruta       # ¿Existe (fichero o directorio)?
+test -s fichero    # ¿Fichero existe y tiene tamaño &gt; 0?
+</code></pre>
+<p></p>
+<p>#### **Pruebas de cadenas:**</p>
+<pre><code>
+test -z cadena     # ¿Cadena vacía?
+test -n cadena     # ¿Cadena no vacía?
+test &quot;$a&quot; = &quot;$b&quot;   # ¿Cadenas iguales?
+test &quot;$a&quot; != &quot;$b&quot;  # ¿Cadenas distintas?
+test -n &quot;$var&quot;     # ¿Variable definida?
+</code></pre>
+<p></p>
+<p>#### **Pruebas de enteros:**</p>
+<pre><code>
+test $a -eq $b     # ¿Iguales?
+test $a -ne $b     # ¿Distintos?
+test $a -gt $b     # ¿Mayor que?
+test $a -ge $b     # ¿Mayor o igual?
+test $a -lt $b     # ¿Menor que?
+test $a -le $b     # ¿Menor o igual?
+</code></pre>
+<p></p>
+<p>**Ejemplo: `prueba_test.sh`**</p>
+<pre><code>
+#!/bin/sh
+
+# Pruebas de ficheros
+if test -f &quot;/etc/passwd&quot;
+then
+    echo &quot;/etc/passwd es un fichero regular&quot;
+fi
+
+# Pruebas de cadenas
+nombre=&quot;Juan&quot;
+if test -n &quot;$nombre&quot;
+then
+    echo &quot;La variable nombre contiene: $nombre&quot;
+fi
+
+# Pruebas de enteros
+edad=25
+if test $edad -ge 18
+then
+    echo &quot;$edad años: ¡Mayor de edad!&quot;
+fi
+
+# Prueba: ¿fichero no está vacío?
+if test -s &quot;/var/log/syslog&quot;
+then
+    echo &quot;El log /var/log/syslog tiene contenido&quot;
+fi
+
+exit 0
+</code></pre>
+<p></p>
+<p>**Sintaxis alternativa con `[ ... ]`:**</p>
+<pre><code>
+# Equivalentes:
+test -f fichero
+[ -f fichero ]
+
+# En un if:
+if [ -f fichero ]
+then
+    echo &quot;Existe&quot;
+fi
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h3>8. SENTENCIAS CASE</h3>
+<p></p>
+<p>`case` compara una palabra contra **patrones de globbing**:</p>
+<p></p>
+<pre><code>
+case palabra in
+patrón1)
+    comandos
+    ;;
+patrón2 | patrón3)
+    comandos (múltiples patrones)
+    ;;
+*)
+    comandos_default
+    ;;
+esac
+</code></pre>
+<p></p>
+<p>**Ejemplo: `prueba_case.sh`**</p>
+<pre><code>
+#!/bin/sh
+
+archivo=&quot;documento.txt&quot;
+
+case &quot;$archivo&quot; in
+*.txt)
+    echo &quot;Es un fichero de texto&quot;
+    ;;
+*.pdf)
+    echo &quot;Es un PDF&quot;
+    ;;
+*.sh)
+    echo &quot;Es un script de shell&quot;
+    ;;
+*)
+    echo &quot;Tipo desconocido&quot;
+    ;;
+esac
+
+exit 0
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>PARTE VI: BUCLES</h2>
+<p></p>
+<h3>9. BUCLE WHILE</h3>
+<p></p>
+<p>Se ejecuta mientras el comando devuelve éxito (status 0):</p>
+<p></p>
+<pre><code>
+while comando
+do
+    comandos
+done
+</code></pre>
+<p></p>
+<p>**Ejemplo: `prueba_while.sh`**</p>
+<pre><code>
+#!/bin/sh
+
+contador=1
+while test $contador -le 5
+do
+    echo &quot;Iteración $contador&quot;
+    contador=$((contador + 1))
+done
+
+echo &quot;Fin&quot;
+exit 0
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h3>10. BUCLE FOR</h3>
+<p></p>
+<p>Itera sobre una lista de palabras:</p>
+<p></p>
+<pre><code>
+for variable in palabra1 palabra2 palabra3
+do
+    comandos  # Usa $variable
+done
+</code></pre>
+<p></p>
+<p>**Ejemplo: `prueba_for.sh`**</p>
+<pre><code>
+#!/bin/sh
+
+# Iterar sobre literales
+for fruta in manzana plátano cereza
+do
+    echo &quot;Fruta: $fruta&quot;
+done
+
+# Iterar sobre sustitución de comando
+echo &quot;Números del 1 al 5:&quot;
+for num in $(seq 1 5)
+do
+    echo &quot;  - $num&quot;
+done
+
+# Iterar sobre argumentos
+echo &quot;Argumentos recibidos:&quot;
+for arg in &quot;$@&quot;
+do
+    echo &quot;  - $arg&quot;
+done
+
+exit 0
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>PARTE VII: LECTURA DE ENTRADA: read</h2>
+<p></p>
+<h3>11. COMANDO READ</h3>
+<p></p>
+<p>`read` lee una línea de la entrada estándar y la guarda en una variable.</p>
+<p></p>
+<pre><code>
+read variable
+</code></pre>
+<p></p>
+<p>**Ejemplo: `prueba_read.sh`**</p>
+<pre><code>
+#!/bin/sh
+
+echo &quot;¿Cuál es tu nombre?&quot;
+read nombre
+echo &quot;¡Hola, $nombre!&quot;
+
+exit 0
+</code></pre>
+<p></p>
+<p>**Read en bucle (leer fichero línea a línea):**</p>
+<pre><code>
+while read linea
+do
+    echo &quot;Línea leída: $linea&quot;
+done &lt; fichero.txt
+</code></pre>
+<p></p>
+<p>**Ejemplo completo: `prueba_read_bucle.sh`**</p>
+<pre><code>
+#!/bin/sh
+
+# Crear fichero de prueba
+cat &gt; /tmp/datos.txt &lt;&lt; &#x27;EOF&#x27;
+línea uno
+línea dos
+línea tres
+EOF
+
+echo &quot;Leyendo /tmp/datos.txt:&quot;
+while read linea
+do
+    echo &quot;  -&gt; $linea&quot;
+done &lt; /tmp/datos.txt
+
+rm /tmp/datos.txt
+exit 0
+</code></pre>
+<p></p>
+<p>**Cuidado:** Si usas `read` dentro de un bucle con redirección, ten cuidado con la entrada de otros comandos en el bucle.</p>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>PARTE VIII: VARIABLE IFS (Internal Field Separator)</h2>
+<p></p>
+<h3>12. IFS: SEPARADOR DE CAMPOS</h3>
+<p></p>
+<p>`IFS` define qué caracteres se usan como **separadores de campos**. Por defecto: espacio, tabulador, salto de línea.</p>
+<p></p>
+<p>**Ejemplo: `prueba_ifs.sh`**</p>
+<pre><code>
+#!/bin/sh
+
+datos=&quot;uno:dos:tres:cuatro&quot;
+
+echo &quot;Con IFS por defecto (espacio):&quot;
+for palabra in $datos
+do
+    echo &quot;  - $palabra&quot;
+done
+
+echo &quot;&quot;
+echo &quot;Con IFS = &#x27;:&#x27;:&quot;
+IFS=:
+for palabra in $datos
+do
+    echo &quot;  - $palabra&quot;
+done
+
+exit 0
+</code></pre>
+<p></p>
+<p>**Cuidado:** Cambiar `IFS` afecta a todo el script. **Usa subshell** para cambios locales:</p>
+<p></p>
+<pre><code>
+#!/bin/sh
+
+datos=&quot;uno:dos:tres&quot;
+
+# Cambio LOCAL en subshell
+(
+    IFS=:
+    for palabra in $datos
+    do
+        echo &quot;  - $palabra&quot;
+    done
+)
+
+# IFS original aquí
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>PARTE IX: FUNCIONES</h2>
+<p></p>
+<h3>13. DEFINICIÓN Y USO DE FUNCIONES</h3>
+<p></p>
+<p>Las funciones agrupan código reutilizable. Los parámetros se acceden como `$1`, `$2`, etc.</p>
+<p></p>
+<pre><code>
+nombre_funcion() {
+    # comandos
+    # Acceso a parámetros: $1, $2, $#, etc.
+}
+
+# Ejecutar función
+nombre_funcion arg1 arg2
+</code></pre>
+<p></p>
+<p>**Ejemplo: `prueba_funciones.sh`**</p>
+<pre><code>
+#!/bin/sh
+
+# Definir función
+saludar() {
+    nombre=$1
+    edad=$2
+    echo &quot;¡Hola, $nombre! Tienes $edad años.&quot;
+}
+
+# Llamar función
+saludar &quot;Juan&quot; &quot;25&quot;
+saludar &quot;María&quot; &quot;30&quot;
+
+exit 0
+</code></pre>
+<p></p>
+<p>**Funciones con variables locales (shadowing):**</p>
+<pre><code>
+#!/bin/sh
+
+variable_global=&quot;GLOBAL&quot;
+
+mi_funcion() {
+    variable_global=&quot;LOCAL&quot;  # Oculta la global dentro de la función
+    echo &quot;Dentro de la función: $variable_global&quot;
+}
+
+echo &quot;Antes: $variable_global&quot;
+mi_funcion
+echo &quot;Después: $variable_global&quot;  # ¡Cambio PERSISTE!
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>PARTE X: OPERACIONES ARITMÉTICAS</h2>
+<p></p>
+<h3>14. CÁLCULOS CON NÚMEROS</h3>
+<p></p>
+<pre><code>
+resultado=$((expresión))
+</code></pre>
+<p></p>
+<p>**Ejemplo: `prueba_aritmetica.sh`**</p>
+<pre><code>
+#!/bin/sh
+
+a=10
+b=3
+
+suma=$((a + b))
+resta=$((a - b))
+producto=$((a * b))
+division=$((a / b))
+modulo=$((a % b))
+
+echo &quot;a = $a, b = $b&quot;
+echo &quot;Suma: $suma&quot;
+echo &quot;Resta: $resta&quot;
+echo &quot;Producto: $producto&quot;
+echo &quot;División: $division&quot;
+echo &quot;Módulo: $modulo&quot;
+
+# Incrementar variable
+contador=0
+contador=$((contador + 1))
+echo &quot;contador = $contador&quot;
+
+exit 0
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>PARTE XI: EXPRESIONES REGULARES</h2>
+<p></p>
+<h3>15. CONCEPTOS DE EXPRESIONES REGULARES</h3>
+<p></p>
+<p>Una **expresión regular** describe un **lenguaje formal** (conjunto de cadenas).</p>
+<p></p>
+<p>#### **Caracteres especiales:**</p>
+<p></p>
+<p>| Carácter | Significado |</p>
+<p>|----------|-------------|</p>
+<p>| `.` | Cualquier carácter |</p>
+<p>| `[abc]` | Uno de a, b o c |</p>
+<p>| `[a-z]` | Rango: de a a z |</p>
+<p>| `[^abc]` | Cualquiera EXCEPTO a, b, c |</p>
+<p>| `^` | Principio de línea |</p>
+<p>| `$` | Final de línea |</p>
+<p>| `*` | Cero o más veces el anterior |</p>
+<p>| `+` | Una o más veces el anterior |</p>
+<p>| `?` | Cero o una vez el anterior |</p>
+<p>| `\|` | Alternativa (o) |</p>
+<p>| `( )` | Agrupación |</p>
+<p>| `\` | Escape (carácter literal) |</p>
+<p></p>
+<p>#### **Ejemplos:**</p>
+<pre><code>
+a.c       → Encaja: aac, abc, aXc (cualquier carácter en el medio)
+[0-9]+    → Encaja: 1, 123, 9999 (uno o más dígitos)
+[a-z]*    → Encaja: &quot;&quot;, a, abc, xyz (cero o más minúsculas)
+^inicio   → Encaja si la línea COMIENZA con &quot;inicio&quot;
+fin$      → Encaja si la línea TERMINA con &quot;fin&quot;
+(ab)+     → Encaja: ab, abab, ababab
+hola|adiós→ Encaja: hola o adiós
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>PARTE XII: GREP Y EGREP</h2>
+<p></p>
+<h3>16. COMANDO EGREP: BÚSQUEDA CON EXPRESIONES REGULARES</h3>
+<p></p>
+<p>`egrep` es un filtro que escribe las líneas que encajan con una expresión regular.</p>
+<p></p>
+<p>**Sintaxis:**</p>
+<pre><code>
+egrep [opciones] &#x27;expresión_regular&#x27; [fichero...]
+</code></pre>
+<p></p>
+<p>#### **Opciones útiles:**</p>
+<p></p>
+<p>| Opción | Significado |</p>
+<p>|--------|-------------|</p>
+<p>| `-v` | Invertir: líneas que no encajan |</p>
+<p>| `-n` | Mostrar número de línea |</p>
+<p>| `-q` | Silencioso (solo status de salida) |</p>
+<p>| `-i` | Ignorar mayúsculas/minúsculas |</p>
+<p>| `-c` | Contar líneas que encajan |</p>
+<p></p>
+<p>#### **Ejemplos de uso:**</p>
+<p></p>
+<pre><code>
+# Líneas con un número de 2 dígitos
+egrep &#x27;[0-9][0-9]&#x27; datos.txt
+
+# Comprobar si hay alguna línea que empiece por ERROR
+if egrep -q &#x27;^ERROR&#x27; log.txt
+then
+    echo &quot;Hay errores&quot;
+fi
+
+# Filtrar líneas que NO contengan la palabra tmp
+egrep -v &#x27;tmp&#x27; /etc/fstab
+</code></pre>
+<p></p>
+<p>**Ejemplo completo: `prueba_egrep.sh`**</p>
+<pre><code>
+#!/bin/sh
+
+# Crear fichero de prueba
+cat &gt; /tmp/test.txt &lt;&lt; &#x27;EOF&#x27;
+Juan 25
+María 30
+Pedro 22
+Ana 28
+EOF
+
+echo &quot;=== Líneas con números de 2 dígitos ===&quot;
+egrep &#x27;[0-9]{2}&#x27; /tmp/test.txt
+
+echo &quot;&quot;
+echo &quot;=== Nombres que empiezan con J o M ===&quot;
+egrep &#x27;^[JM]&#x27; /tmp/test.txt
+
+echo &quot;&quot;
+echo &quot;=== Contar líneas ===&quot;
+egrep -c &#x27;&#x27; /tmp/test.txt
+
+rm /tmp/test.txt
+exit 0
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>PARTE XIII: SED - STREAM EDITOR</h2>
+<p></p>
+<h3>17. COMANDO SED: EDITOR DE FLUJOS</h3>
+<p></p>
+<p>`sed` es un **editor de flujos**: aplica comandos a cada línea de entrada.</p>
+<p></p>
+<p>#### **Sintaxis básica:**</p>
+<p></p>
+<pre><code>
+sed &#x27;COMANDOS&#x27; fichero
+</code></pre>
+<p></p>
+<p>#### **Comandos importantes:**</p>
+<p></p>
+<p>| Comando | Significado |</p>
+<p>|---------|-------------|</p>
+<p>| `s/viejo/nuevo/` | Sustituir la primera coincidencia |</p>
+<p>| `s/viejo/nuevo/g` | Sustituir todas las coincidencias |</p>
+<p>| `d` | Borrar la línea |</p>
+<p>| `p` | Imprimir la línea (útil con `-n`) |</p>
+<p>| `q` | Salir |</p>
+<p></p>
+<p>#### **Selección de líneas (direcciones):**</p>
+<p></p>
+<pre><code>
+sed &#x27;3d&#x27; fichero              # borrar línea 3
+sed &#x27;1,5d&#x27; fichero            # borrar líneas 1 a 5
+sed &#x27;/ERROR/d&#x27; fichero        # borrar las que contienen ERROR
+sed &#x27;/^#/d&#x27; fichero           # borrar comentarios que empiezan por #
+sed &#x27;5,10s/foo/bar/g&#x27; fichero # solo líneas 5–10
+</code></pre>
+<p></p>
+<p>#### **Ejemplos de uso:**</p>
+<p></p>
+<pre><code>
+# Cambiar &#x27;mundo&#x27; por &#x27;universo&#x27;
+sed &#x27;s/mundo/universo/&#x27; mensaje.txt
+
+# Cambiar todas las apariciones
+sed &#x27;s/mundo/universo/g&#x27; mensaje.txt
+
+# Eliminar líneas en blanco
+sed &#x27;/^$/d&#x27; mensaje.txt
+</code></pre>
+<p></p>
+<p>**Ejemplo completo: `prueba_sed.sh`**</p>
+<pre><code>
+#!/bin/sh
+
+# Crear fichero de prueba
+cat &gt; /tmp/datos.txt &lt;&lt; &#x27;EOF&#x27;
+hola mundo
+adiós mundo
+hola amigos
+mundo mundo
+EOF
+
+echo &quot;=== Original ===&quot;
+cat /tmp/datos.txt
+
+echo &quot;&quot;
+echo &quot;=== Reemplazar &#x27;mundo&#x27; por &#x27;universo&#x27; (primera ocurrencia por línea) ===&quot;
+sed &#x27;s/mundo/universo/&#x27; /tmp/datos.txt
+
+echo &quot;&quot;
+echo &quot;=== Reemplazar &#x27;mundo&#x27; por &#x27;universo&#x27; (todas en cada línea) ===&quot;
+sed &#x27;s/mundo/universo/g&#x27; /tmp/datos.txt
+
+echo &quot;&quot;
+echo &quot;=== Borrar líneas que contienen &#x27;adiós&#x27; ===&quot;
+sed &#x27;/adiós/d&#x27; /tmp/datos.txt
+
+rm /tmp/datos.txt
+exit 0
+</code></pre>
+<p></p>
+<p>#### **Sustituciones con backreferences (referencias hacia atrás):**</p>
+<p></p>
+<p>Con `sed -E` (expresiones regulares extendidas) y agrupaciones `(...)`, puedes referir lo que encajó:</p>
+<p></p>
+<pre><code>
+echo &quot;Juan 25&quot; | sed -E &#x27;s/([A-Za-z]+)[ ]+([0-9]+)/Nombre: \1, Edad: \2/&#x27;
+# → Nombre: Juan, Edad: 25
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>PARTE XIV: AWK - PROCESADOR DE TEXTO POR CAMPOS</h2>
+<p></p>
+<h3>18. COMANDO AWK: LENGUAJE DE PROCESAMIENTO</h3>
+<p></p>
+<p>`awk` es un lenguaje completo pensado para procesar texto por columnas.</p>
+<p></p>
+<p>**Estructura general:**</p>
+<p></p>
+<pre><code>
+awk &#x27;patrón { acciones }&#x27; fichero
+</code></pre>
+<p></p>
+<p>#### **Variables predefinidas:**</p>
+<p></p>
+<p>| Variable | Significado |</p>
+<p>|----------|-------------|</p>
+<p>| `$0` | Línea completa |</p>
+<p>| `$1, $2, ...` | Campos de la línea |</p>
+<p>| `NF` | Número de campos |</p>
+<p>| `NR` | Número de línea (registro actual) |</p>
+<p>| `FS` | Separador de campos (por defecto: espacios/tabuladores) |</p>
+<p></p>
+<p>#### **Separador de campos:**</p>
+<p></p>
+<p>Por defecto, espacios y tabuladores. Se puede cambiar con `-F`:</p>
+<p></p>
+<pre><code>
+awk -F: &#x27;{print $1}&#x27; /etc/passwd    # separador &#x27;:&#x27;
+awk -F, &#x27;{print $2}&#x27; datos.csv      # separador &#x27;,&#x27;
+</code></pre>
+<p></p>
+<p>#### **Ejemplos básicos:**</p>
+<p></p>
+<pre><code>
+# Imprimir primera columna
+awk &#x27;{ print $1 }&#x27; datos.txt
+
+# Usar separador coma (CSV) y sacar columna 3 y 2
+awk -F, &#x27;{ printf(&quot;%s\t%s\n&quot;, $3, $2) }&#x27; datos.csv
+
+# Mostrar nombre y tamaño de ficheros
+ls -l | awk &#x27;{ printf(&quot;Size:%08d bytes\tFichero:%s\n&quot;, $5, $9) }&#x27;
+</code></pre>
+<p></p>
+<p>#### **Filtrar por patrón:**</p>
+<p></p>
+<pre><code>
+# Líneas que contienen ERROR
+awk &#x27;/ERROR/ { print $0 }&#x27; log.txt
+
+# Solo líneas 5 a 10
+awk &#x27;NR &gt;= 5 &amp;&amp; NR &lt;= 10 { print $0 }&#x27; fichero
+
+# Solo las que tengan más de 3 campos
+awk &#x27;NF &gt; 3 { print $0 }&#x27; fichero
+</code></pre>
+<p></p>
+<p>#### **Inicialización y finalización:**</p>
+<p></p>
+<pre><code>
+awk &#x27;
+BEGIN { suma = 0 }
+      { suma += $1 }
+END   { printf(&quot;Suma: %d\n&quot;, suma) }
+&#x27; numeros.txt
+</code></pre>
+<p></p>
+<p>#### **Arrays asociativos (contar repeticiones):**</p>
+<p></p>
+<pre><code>
+awk &#x27;
+{ dups[$0]++ }
+END {
+    for (linea in dups) {
+        print dups[linea], linea
+    }
+}&#x27; datos.txt
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>PARTE XV: RECORRER ÁRBOLES DE DIRECTORIOS</h2>
+<p></p>
+<h3>19. COMANDO DU: USO DE DISCO</h3>
+<p></p>
+<p>`du` informa del uso de disco. Con `-a` muestra todos los ficheros y directorios por debajo de una ruta.</p>
+<p></p>
+<pre><code>
+du -a .           # listar tamaños de todo el árbol bajo el directorio actual
+du -ah /var/log   # lo mismo, con tamaños &quot;humanos&quot;
+</code></pre>
+<p></p>
+<p>**Combinado con otros filtros:**</p>
+<p></p>
+<pre><code>
+# Ver los 10 elementos más &quot;pesados&quot;
+du -a . | sort -n | tail -n 10
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h3>20. COMANDO FIND: BÚSQUEDA Y ACCIONES</h3>
+<p></p>
+<p>`find` recorre un árbol aplicando pruebas y acciones.</p>
+<p></p>
+<p>**Patrón típico:**</p>
+<p></p>
+<pre><code>
+find RUTA [pruebas] [acciones]
+</code></pre>
+<p></p>
+<p>#### **Ejemplos:**</p>
+<p></p>
+<pre><code>
+# Todos los ficheros bajo .
+find . -type f
+
+# Ficheros .c
+find . -type f -name &#x27;*.c&#x27;
+
+# Directorios vacíos
+find . -type d -empty
+
+# Ficheros modificados en los últimos 7 días
+find . -type f -mtime -7
+</code></pre>
+<p></p>
+<p>#### **Con `-exec` para ejecutar comandos:**</p>
+<p></p>
+<pre><code>
+# Borrar todos los .o
+find . -type f -name &#x27;*.o&#x27; -exec rm -f {} \;
+
+# Cambiar permisos a todos los scripts .sh
+find . -type f -name &#x27;*.sh&#x27; -exec chmod u+x {} \;
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>PARTE XVI: FILTROS Y HERRAMIENTAS DE TEXTO</h2>
+<p></p>
+<h3>21. SORT: ORDENAR LÍNEAS</h3>
+<p></p>
+<pre><code>
+sort fichero                 # Orden alfanumérico
+sort -n fichero              # Orden numérico
+sort -k2 -t: fichero         # Ordenar por campo 2 con separador &#x27;:&#x27;
+sort -u fichero              # Ordenar y eliminar duplicados
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h3>22. UNIQ: ELIMINAR DUPLICADOS</h3>
+<p></p>
+<pre><code>
+uniq fichero                 # Eliminar duplicados contiguos
+uniq -c fichero              # Contar duplicados
+uniq -d fichero              # Solo las líneas repetidas
+</code></pre>
+<p></p>
+<p>Normalmente se combina con `sort`:</p>
+<p></p>
+<pre><code>
+sort palabras.txt | uniq -c | sort -nr
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h3>23. TAIL Y HEAD: PRIMERAS Y ÚLTIMAS LÍNEAS</h3>
+<p></p>
+<pre><code>
+head -n 5 fichero            # Primeras 5 líneas
+tail -n 10 fichero           # Últimas 10 líneas
+tail -f /var/log/syslog      # Seguir un log en tiempo real
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h3>24. CUT Y PASTE: CAMPOS Y COLUMNAS</h3>
+<p></p>
+<pre><code>
+cut -d: -f1,3 /etc/passwd      # campos 1 y 3, separador &#x27;:&#x27;
+paste nombres.txt notas.txt    # pegar columnas de dos ficheros
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h3>25. TR: TRADUCCIÓN DE CARACTERES</h3>
+<p></p>
+<p>`tr` traduce o elimina caracteres:</p>
+<p></p>
+<pre><code>
+tr &#x27;viejo&#x27; &#x27;nuevo&#x27;   # Traducir cada carácter
+tr -d &#x27;caracteres&#x27;   # Borrar caracteres
+tr &#x27;a-z&#x27; &#x27;A-Z&#x27;       # Convertir a mayúsculas
+</code></pre>
+<p></p>
+<p>**Ejemplo: `prueba_tr.sh`**</p>
+<pre><code>
+#!/bin/sh
+
+texto=&quot;Hola Mundo 123&quot;
+
+echo &quot;Original: $texto&quot;
+echo &quot;Mayúsculas: $(echo &quot;$texto&quot; | tr &#x27;a-z&#x27; &#x27;A-Z&#x27;)&quot;
+echo &quot;Minúsculas: $(echo &quot;$texto&quot; | tr &#x27;A-Z&#x27; &#x27;a-z&#x27;)&quot;
+echo &quot;Sin dígitos: $(echo &quot;$texto&quot; | tr -d &#x27;0-9&#x27;)&quot;
+echo &quot;Espacios por &#x27;_&#x27;: $(echo &quot;$texto&quot; | tr &#x27; &#x27; &#x27;_&#x27;)&quot;
+
+exit 0
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h3>26. JOIN: INNER JOIN RELACIONAL</h3>
+<p></p>
+<p>`join` hace un inner join entre dos ficheros ordenados por la clave.</p>
+<p></p>
+<p>**Requisitos:**</p>
+<ul><li>Ambos ficheros deben estar ordenados por la columna usada como clave.</li></ul>
+<ul><li>Por defecto, usa la primera columna, con separadores de espacio/tabulador.</li></ul>
+<p></p>
+<p>**Ejemplo:**</p>
+<p></p>
+<pre><code>
+echo &#x27;a bla
+b ble
+c blo&#x27; &gt; a.txt
+
+echo &#x27;a ta
+b te
+c to&#x27; &gt; b.txt
+
+join a.txt b.txt
+# a bla ta
+# b ble te
+# c blo to
+</code></pre>
+<p></p>
+<p>Si no están ordenados:</p>
+<p></p>
+<pre><code>
+sort a.txt -o a.txt
+sort b.txt -o b.txt
+join a.txt b.txt
+</code></pre>
+<p></p>
+<p>**Opciones útiles:**</p>
+<ul><li>`-1 N`: columna de clave en el primer fichero</li></ul>
+<ul><li>`-2 N`: columna de clave en el segundo</li></ul>
+<ul><li>`-t SEP`: separador de campos</li></ul>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>PARTE XVII: REDIRECCIONES Y PIPES</h2>
+<p></p>
+<h3>27. REDIRECCIONES</h3>
+<p></p>
+<pre><code>
+comando &gt; fichero       # Salida estándar a fichero (trunca)
+comando &gt;&gt; fichero      # Salida estándar al final (append)
+comando 2&gt; fichero      # Salida de error a fichero
+comando 2&gt;&amp;1            # Salida de error a salida estándar
+comando &lt; fichero       # Entrada desde fichero
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h3>28. PIPES (TUBERÍAS)</h3>
+<p></p>
+<pre><code>
+comando1 | comando2     # Salida de comando1 → Entrada de comando2
+comando1 | comando2 | comando3  # Encadenar comandos
+</code></pre>
+<p></p>
+<p>**Ejemplo: `prueba_pipes.sh`**</p>
+<pre><code>
+#!/bin/sh
+
+echo &quot;=== Pipeline simple ===&quot;
+echo -e &quot;manzana\nplátano\ncereza&quot; | sort
+
+echo &quot;&quot;
+echo &quot;=== Pipeline complejo ===&quot;
+echo -e &quot;3\n1\n4\n1\n5&quot; | sort -n | uniq -c | sort -rn
+
+echo &quot;&quot;
+echo &quot;=== Redireccionamiento ===&quot;
+echo &quot;Error de prueba&quot; 2&gt; /tmp/error.txt
+echo &quot;Contenido de error.txt:&quot;
+cat /tmp/error.txt
+rm /tmp/error.txt
+
+exit 0
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h3>29. XARGS: CONSTRUCCIÓN DE COMANDOS</h3>
+<p></p>
+<p>`xargs` construye y ejecuta comandos a partir de la entrada estándar.</p>
+<p></p>
+<p>**Sintaxis típica:**</p>
+<p></p>
+<pre><code>
+comando_que_lista | xargs otro_comando
+</code></pre>
+<p></p>
+<p>#### **Ejemplos:**</p>
+<p></p>
+<pre><code>
+# Ver en una columna los ficheros a, b, c
+echo a b c | xargs ls -1
+
+# Borrar todos los .o bajo el árbol
+find . -type f -name &#x27;*.o&#x27; -print | xargs rm -f
+
+# Buscar una cadena en todos los .c
+find . -type f -name &#x27;*.c&#x27; -print | xargs egrep &#x27;main\(&#x27;
+</code></pre>
+<p></p>
+<p>**Con nombres con espacios (variante &quot;segura&quot; -print0 / -0):**</p>
+<p></p>
+<pre><code>
+find . -type f -name &#x27;*.c&#x27; -print0 | xargs -0 egrep &#x27;main\(&#x27;
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>RESUMEN RÁPIDO DE CONSTRUCCIONES</h2>
+<p></p>
+<pre><code>
+# Parámetros
+$0, $1, $2, ..., $#, &quot;$@&quot;, &quot;$*&quot;
+
+# Control de flujo
+if [ -f fichero ]; then ... fi
+case $var in patrón) ... ;; esac
+
+# Bucles
+for var in lista; do ... done
+while comando; do ... done
+
+# Sustitución
+$(comando)
+`comando`  # Forma antigua
+
+# Aritméticas
+$((a + b))
+
+# Variables especiales test
+test -f fichero
+test -d directorio
+test &quot;$a&quot; = &quot;$b&quot;
+test $a -eq $b
+
+# Funciones
+nombre() { ... }
+
+# Salida estándar y error
+&gt; fichero, &gt;&gt; fichero, 2&gt; fichero, 2&gt;&amp;1
+
+# Pipes
+cmd1 | cmd2 | cmd3
+
+# Expresiones regulares con egrep
+egrep &#x27;patrón&#x27; fichero
+
+# Sed
+sed &#x27;s/viejo/nuevo/g&#x27; fichero
+sed &#x27;/patrón/d&#x27; fichero
+
+# Awk
+awk &#x27;{ print $1 }&#x27; fichero
+awk -F: &#x27;{ print $3 }&#x27; fichero
+
+# Filtros
+sort, uniq, tail, head, tr, grep, sed, awk, cut, paste, join
+
+# Utilitarios
+du, find, xargs
+</code></pre>
+<p></p>
+<p>---</p>
+<p></p>
+</body></html>

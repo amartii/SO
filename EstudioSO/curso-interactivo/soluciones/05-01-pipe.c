@@ -11,6 +11,7 @@ main(int argc, char *argv[])
 	pid_t pid;
 	char buf[256];
 	ssize_t n;
+	char *msg = "Mensaje del padre";
 
 	if (pipe(fd) == -1) {
 		perror("pipe");
@@ -34,7 +35,7 @@ main(int argc, char *argv[])
 	}
 	/* Padre: escritor */
 	close(fd[0]);
-	write(fd[1], "Mensaje del padre", 17);
+	write(fd[1], msg, strlen(msg));
 	close(fd[1]);
 	wait(NULL);
 	exit(EXIT_SUCCESS);

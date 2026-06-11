@@ -7,11 +7,13 @@
 **Enunciado:** Escribe un programa donde el padre envie un mensaje al hijo a traves de un pipe. El hijo lee el mensaje y lo imprime.
 
 **Ejemplo:**
+
 ```
 Hijo recibio: Mensaje del padre
 ```
 
 **Pistas:**
+
 - Crea el pipe ANTES del fork
 - El padre cierra fd[0] (lectura) y escribe en fd[1]
 - El hijo cierra fd[1] (escritura) y lee de fd[0]
@@ -26,6 +28,7 @@ Hijo recibio: Mensaje del padre
 **Enunciado:** Escribe un programa que simule el pipeline del shell `ps aux | wc -l` usando pipe, fork, dup2 y exec. Crea dos hijos: uno ejecuta ps aux y otro ejecuta wc -l, conectados por un pipe.
 
 **Pistas:**
+
 - Crea un pipe
 - Hijo 1: cierra fd[0], dup2(fd[1], STDOUT_FILENO), cierra fd[1], execlp("ps", ...)
 - Hijo 2: cierra fd[1], dup2(fd[0], STDIN_FILENO), cierra fd[0], execlp("wc", ...)
@@ -40,6 +43,7 @@ Hijo recibio: Mensaje del padre
 **Enunciado:** Escribe un programa que registre un manejador para SIGINT (Ctrl+C). El manejador imprime "Ctrl+C recibido, intento N". Despues de 3 intentos, el programa termina.
 
 **Ejemplo:**
+
 ```
 Esperando señales... (Ctrl+C para probar)
 ^CCtrl+C recibido, intento 1
@@ -48,6 +52,7 @@ Esperando señales... (Ctrl+C para probar)
 ```
 
 **Pistas:**
+
 - Usa una variable global para el contador (volatile sig_atomic_t)
 - signal(SIGINT, tu_manejador)
 - El programa espera en un bucle con pause() o sleep()
@@ -61,6 +66,7 @@ Esperando señales... (Ctrl+C para probar)
 **Enunciado:** Escribe un programa que intente leer de un pipe vacio. Registra un manejador de SIGALRM que imprime "Timeout!" y termina. Usa alarm(3) para que el timeout sea de 3 segundos.
 
 **Pistas:**
+
 - Crea un pipe pero no escribas nada
 - Registra manejador para SIGALRM
 - alarm(3) antes de read
